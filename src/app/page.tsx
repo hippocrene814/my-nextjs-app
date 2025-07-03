@@ -3,44 +3,25 @@ import React, { useState } from 'react';
 import { getMuseums } from '../context/MuseumsContext';
 import MuseumCard from '../components/MuseumCard';
 
-function makeKey(museum: { name?: string; city?: string; country?: string }) {
-  return `${(museum.name || '').toLowerCase()}|${(museum.city || '').toLowerCase()}|${(museum.country || '').toLowerCase()}`;
-}
-
 export default function Home() {
   const { museums, userData, loading, error, hasMore, fetchNextPage } = getMuseums();
-  const [search, setSearch] = useState('');
 
-  const filteredRaw = museums.filter(m =>
-    m.name.toLowerCase().includes(search.toLowerCase()) ||
-    (m.city?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
-    (m.country?.toLowerCase().includes(search.toLowerCase()) ?? false)
-  );
-  // Deduplicate by name+city+country
+  // Deduplicate by id (Wikidata entity URI)
   const seen = new Set<string>();
-  const filtered = filteredRaw.filter(m => {
-    const key = makeKey(m);
-    if (seen.has(key)) return false;
-    seen.add(key);
+  const filtered = museums.filter(m => {
+    if (!m.id) return false;
+    if (seen.has(m.id)) return false;
+    seen.add(m.id);
     return true;
   });
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold mb-6 text-center">Choose your dream museum</h1>
-      <div className="flex justify-center mb-8">
-        <input
-          type="text"
-          placeholder="Search museums..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="w-full max-w-md px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
-        />
-      </div>
+      <h1 className="text-3xl font-bold mb-8 mt-6 text-center">Explore Museums</h1>
       <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-        {filtered.map((museum, idx) => (
+        {filtered.map((museum) => (
           <MuseumCard
-            key={makeKey(museum)}
+            key={museum.id}
             museum={museum}
             userData={userData[museum.id] || { status: 'none', notes: '' }}
           />

@@ -3,19 +3,16 @@ import React from 'react';
 import { getMuseums } from '../../context/MuseumsContext';
 import MuseumCard from '../../components/MuseumCard';
 
-function makeKey(museum: { name?: string; city?: string; country?: string }) {
-  return `${(museum.name || '').toLowerCase()}|${(museum.city || '').toLowerCase()}|${(museum.country || '').toLowerCase()}`;
-}
-
 export default function WishPage() {
   const { museums, userData } = getMuseums();
   // Filter and deduplicate wish museums by name+city+country
   const wishMuseumsRaw = museums.filter(m => userData[m.id]?.status === 'wish');
+  // Deduplicate by id (Wikidata entity URI)
   const seen = new Set<string>();
   const wishMuseums = wishMuseumsRaw.filter(m => {
-    const key = makeKey(m);
-    if (seen.has(key)) return false;
-    seen.add(key);
+    if (!m.id) return false;
+    if (seen.has(m.id)) return false;
+    seen.add(m.id);
     return true;
   });
 
@@ -23,9 +20,9 @@ export default function WishPage() {
     <div className="max-w-5xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold mb-6 text-center">Wish to Visit</h1>
       <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-        {wishMuseums.map((museum, idx) => (
+        {wishMuseums.map((museum) => (
           <MuseumCard
-            key={makeKey(museum)}
+            key={museum.id}
             museum={museum}
             userData={userData[museum.id] || { status: 'none', notes: '' }}
           />

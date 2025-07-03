@@ -29,6 +29,14 @@ export default function NavBar() {
             {item.label}
           </Link>
         ))}
+        <Link
+          href="/search"
+          className={`text-lg font-medium pb-1 border-b-2 transition-colors duration-200 ${
+            pathname === '/search' ? 'border-black' : 'border-transparent text-gray-500 hover:text-black'
+          }`}
+        >
+          Search
+        </Link>
       </div>
     </nav>
   );
