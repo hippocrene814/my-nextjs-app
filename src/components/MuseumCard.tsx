@@ -1,4 +1,6 @@
+"use client";
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { Museum, MuseumStatus, UserMuseumData } from '../context/MuseumsContext';
 
 interface MuseumCardProps {
@@ -14,9 +16,13 @@ const statusColors: Record<MuseumStatus, string> = {
   visited: 'bg-green-200 text-green-800',
 };
 
-export default function MuseumCard({ museum, userData, onStatusChange, onClick }: MuseumCardProps) {
+export default function MuseumCard({ museum, userData, onStatusChange }: MuseumCardProps) {
+  const router = useRouter();
   return (
-    <div className="relative rounded-xl overflow-hidden shadow hover:shadow-lg transition-shadow bg-white cursor-pointer" onClick={onClick}>
+    <div
+      className="relative rounded-xl overflow-hidden shadow hover:shadow-lg transition-shadow bg-white cursor-pointer"
+      onClick={() => router.push(`/museum/${museum.id}`)}
+    >
       <img src={museum.image} alt={museum.name} className="w-full h-48 object-cover" />
       <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/60 to-transparent p-4">
         <div className="text-white text-xl font-semibold drop-shadow mb-1">{museum.name}</div>
