@@ -3,15 +3,27 @@ import React, { useState } from 'react';
 import { getMuseums } from '../context/MuseumsContext';
 import MuseumCard from '../components/MuseumCard';
 
+function makeKey(museum: { name?: string; city?: string; country?: string }) {
+  return `${(museum.name || '').toLowerCase()}|${(museum.city || '').toLowerCase()}|${(museum.country || '').toLowerCase()}`;
+}
+
 export default function Home() {
   const { museums, userData, loading, error, hasMore, fetchNextPage } = getMuseums();
   const [search, setSearch] = useState('');
 
-  const filtered = museums.filter(m =>
+  const filteredRaw = museums.filter(m =>
     m.name.toLowerCase().includes(search.toLowerCase()) ||
     (m.city?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
     (m.country?.toLowerCase().includes(search.toLowerCase()) ?? false)
   );
+  // Deduplicate by name+city+country
+  const seen = new Set<string>();
+  const filtered = filteredRaw.filter(m => {
+    const key = makeKey(m);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
@@ -28,7 +40,7 @@ export default function Home() {
       <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
         {filtered.map((museum, idx) => (
           <MuseumCard
-            key={encodeURIComponent(museum.id) + '-' + idx}
+            key={makeKey(museum)}
             museum={museum}
             userData={userData[museum.id] || { status: 'none', notes: '' }}
           />

@@ -13,8 +13,9 @@ export default function NavBar() {
   const pathname = usePathname();
   return (
     <nav className="w-full flex items-center justify-between px-6 py-4 border-b bg-white sticky top-0 z-30" style={{background: '#fff'}}>
-      <Link href="/" className="text-xl font-bold tracking-tight hover:underline focus:outline-none focus:ring-2 focus:ring-blue-200 transition">
-        Museum Tracker
+      <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight hover:underline focus:outline-none focus:ring-2 focus:ring-blue-200 transition">
+        <img src="/logo.svg" alt="Museum Passport Logo" className="w-8 h-8" />
+        Museum Passport
       </Link>
       <div className="flex gap-6">
         {navItems.map((item) => (
