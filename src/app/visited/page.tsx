@@ -1,10 +1,10 @@
 "use client";
 import React from 'react';
-import { useMuseums } from '../../context/MuseumsContext';
+import { getMuseums } from '../../context/MuseumsContext';
 import MuseumCard from '../../components/MuseumCard';
 
 export default function VisitedPage() {
-  const { museums, userData, setStatus } = useMuseums();
+  const { museums, userData, setStatus } = getMuseums();
   const visitedMuseums = museums.filter(m => userData[m.id]?.status === 'visited');
 
   return (

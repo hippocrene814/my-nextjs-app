@@ -1,15 +1,16 @@
 "use client";
 import React, { useState } from 'react';
-import { useMuseums } from '../context/MuseumsContext';
+import { getMuseums } from '../context/MuseumsContext';
 import MuseumCard from '../components/MuseumCard';
 
 export default function Home() {
-  const { museums, userData, setStatus } = useMuseums();
+  const { museums, userData, loading, error, hasMore, fetchNextPage } = getMuseums();
   const [search, setSearch] = useState('');
 
   const filtered = museums.filter(m =>
     m.name.toLowerCase().includes(search.toLowerCase()) ||
-    m.location.toLowerCase().includes(search.toLowerCase())
+    (m.city?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
+    (m.country?.toLowerCase().includes(search.toLowerCase()) ?? false)
   );
 
   return (
@@ -25,18 +26,29 @@ export default function Home() {
         />
       </div>
       <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-        {filtered.map(museum => (
+        {filtered.map((museum, idx) => (
           <MuseumCard
-            key={museum.id}
+            key={encodeURIComponent(museum.id) + '-' + idx}
             museum={museum}
             userData={userData[museum.id] || { status: 'none', notes: '' }}
-            onStatusChange={status => setStatus(museum.id, status)}
           />
         ))}
         {filtered.length === 0 && (
           <div className="col-span-full text-center text-gray-500">No museums found.</div>
         )}
       </div>
+      {error && <div className="text-red-500 text-center mt-4">{error}</div>}
+      {hasMore && filtered.length > 0 && (
+        <div className="flex justify-center mt-8">
+          <button
+            className="px-6 py-2 rounded-full bg-white border border-gray-300 text-gray-800 font-semibold shadow hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={fetchNextPage}
+            disabled={loading}
+          >
+            {loading ? 'Loading...' : 'Load More'}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

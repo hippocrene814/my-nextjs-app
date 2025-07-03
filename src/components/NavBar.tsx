@@ -12,8 +12,10 @@ const navItems = [
 export default function NavBar() {
   const pathname = usePathname();
   return (
-    <nav className="w-full flex items-center justify-between px-6 py-4 border-b bg-white sticky top-0 z-10">
-      <div className="text-xl font-bold tracking-tight">Museum Tracker</div>
+    <nav className="w-full flex items-center justify-between px-6 py-4 border-b bg-white sticky top-0 z-30" style={{background: '#fff'}}>
+      <Link href="/" className="text-xl font-bold tracking-tight hover:underline focus:outline-none focus:ring-2 focus:ring-blue-200 transition">
+        Museum Tracker
+      </Link>
       <div className="flex gap-6">
         {navItems.map((item) => (
           <Link

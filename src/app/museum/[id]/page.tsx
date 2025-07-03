@@ -1,12 +1,22 @@
 "use client";
 import React, { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useMuseum } from '../../../context/MuseumsContext';
+import { getMuseum } from '../../../context/MuseumsContext';
+
+function getLocation(city?: string, country?: string) {
+  if (city && country) return `${city}, ${country}`;
+  if (city) return city;
+  if (country) return country;
+  return '';
+}
+
+const PLACEHOLDER = '/placeholder-museum.svg';
 
 export default function MuseumDetailPage() {
-  const { id } = useParams<{ id: string }>();
+  const params = useParams<{ id: string }>();
+  const id = decodeURIComponent(params.id);
   const router = useRouter();
-  const { museum, user, setStatus, setNotes } = useMuseum(id);
+  const { museum, user, setStatus, setNotes } = getMuseum(id);
   const [note, setNote] = useState(user.notes);
 
   if (!museum) {
@@ -15,20 +25,33 @@ export default function MuseumDetailPage() {
 
   return (
     <div className="max-w-2xl mx-auto p-8">
-      <button className="mb-4 text-blue-600 hover:underline" onClick={() => router.back()}>&larr; Back</button>
-      <div className="rounded-xl overflow-hidden shadow mb-6">
-        <img src={museum.image} alt={museum.name} className="w-full h-64 object-cover" />
+      <button className="mb-4 px-4 py-2 rounded bg-gray-100 text-gray-700 font-medium shadow hover:bg-gray-200 transition" onClick={() => router.back()}>
+        &larr; Back
+      </button>
+      <div className="rounded-xl overflow-hidden shadow mb-6 relative">
+        <img
+          src={museum.image || PLACEHOLDER}
+          alt={museum.name}
+          className="w-full h-64 object-cover"
+          onError={e => { (e.target as HTMLImageElement).src = PLACEHOLDER; }}
+        />
+        {museum.logo && (
+          <img src={museum.logo} alt="Logo" className="absolute top-3 left-3 w-12 h-12 object-contain bg-white bg-opacity-80 rounded p-1 shadow" />
+        )}
       </div>
       <h1 className="text-3xl font-bold mb-2">{museum.name}</h1>
-      <div className="text-lg text-gray-600 mb-2">{museum.location}</div>
+      <div className="text-lg text-gray-600 mb-2">{getLocation(museum.city, museum.country)}</div>
       <div className="mb-6 text-gray-800">{museum.description}</div>
+      {museum.website && (
+        <div className="mb-6">
+          <a href={museum.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">
+            {museum.website}
+          </a>
+        </div>
+      )}
       <div className="mb-6">
         <label className="block font-semibold mb-2">Status:</label>
         <div className="flex gap-4">
-          <button
-            className={`px-4 py-2 rounded ${user.status === 'none' ? 'bg-gray-300 text-gray-700' : 'bg-gray-100 text-gray-500'}`}
-            onClick={() => setStatus(museum.id, 'none')}
-          >Unmarked</button>
           <button
             className={`px-4 py-2 rounded ${user.status === 'wish' ? 'bg-yellow-200 text-yellow-800' : 'bg-yellow-100 text-yellow-600'}`}
             onClick={() => setStatus(museum.id, 'wish')}

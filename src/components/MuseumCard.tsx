@@ -6,8 +6,6 @@ import { Museum, MuseumStatus, UserMuseumData } from '../context/MuseumsContext'
 interface MuseumCardProps {
   museum: Museum;
   userData: UserMuseumData;
-  onStatusChange: (status: MuseumStatus) => void;
-  onClick?: () => void;
 }
 
 const statusColors: Record<MuseumStatus, string> = {
@@ -16,34 +14,44 @@ const statusColors: Record<MuseumStatus, string> = {
   visited: 'bg-green-200 text-green-800',
 };
 
-export default function MuseumCard({ museum, userData, onStatusChange }: MuseumCardProps) {
+function getLocation(city?: string, country?: string) {
+  if (city && country) return `${city}, ${country}`;
+  if (city) return city;
+  if (country) return country;
+  return '';
+}
+
+const PLACEHOLDER = '/placeholder-museum.svg'; // Place a simple SVG in public/
+
+export default function MuseumCard({ museum, userData }: MuseumCardProps) {
   const router = useRouter();
   return (
     <div
       className="relative rounded-xl overflow-hidden shadow hover:shadow-lg transition-shadow bg-white cursor-pointer"
-      onClick={() => router.push(`/museum/${museum.id}`)}
+      onClick={() => router.push(`/museum/${encodeURIComponent(museum.id)}`)}
+      style={{ minHeight: 192 }} // h-48
     >
-      <img src={museum.image} alt={museum.name} className="w-full h-48 object-cover" />
-      <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/60 to-transparent p-4">
-        <div className="text-white text-xl font-semibold drop-shadow mb-1">{museum.name}</div>
-        <div className="text-white text-sm drop-shadow mb-2">{museum.location}</div>
-        <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${statusColors[userData.status]}`}>
-          {userData.status === 'none' ? 'Unmarked' : userData.status === 'wish' ? 'Wish to Visit' : 'Visited'}
-        </span>
+      {/* Background image absolutely positioned */}
+      <div className="absolute inset-0 w-full h-full z-0">
+        <img
+          src={museum.image || PLACEHOLDER}
+          alt={museum.name}
+          className="w-full h-full object-cover"
+          onError={e => { (e.target as HTMLImageElement).src = PLACEHOLDER; }}
+        />
       </div>
-      <div className="absolute top-2 right-2 flex gap-2">
-        <button
-          className={`px-2 py-1 rounded bg-yellow-100 text-yellow-800 text-xs font-medium shadow ${userData.status === 'wish' ? 'ring-2 ring-yellow-400' : ''}`}
-          onClick={e => { e.stopPropagation(); onStatusChange('wish'); }}
-        >
-          Wish
-        </button>
-        <button
-          className={`px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-medium shadow ${userData.status === 'visited' ? 'ring-2 ring-green-400' : ''}`}
-          onClick={e => { e.stopPropagation(); onStatusChange('visited'); }}
-        >
-          Visited
-        </button>
+      {/* Gradient overlay at bottom for text readability, always visible */}
+      <div className="absolute bottom-0 left-0 w-full h-28 z-10 pointer-events-none" style={{background: 'linear-gradient(to top, rgba(0,0,0,0.7) 60%, rgba(0,0,0,0.15) 90%, rgba(0,0,0,0.0) 100%)'}} />
+      {/* Status tag at top right, only if wish or visited */}
+      {(userData.status === 'wish' || userData.status === 'visited') && (
+        <span className={`absolute top-3 right-3 z-20 px-3 py-1 rounded-full text-xs font-semibold shadow ${statusColors[userData.status]}`}>
+          {userData.status === 'wish' ? 'Wish to Visit' : 'Visited'}
+        </span>
+      )}
+      {/* Museum name and location */}
+      <div className="absolute bottom-0 left-0 w-full p-4 z-20">
+        <div className="text-white text-xl font-semibold drop-shadow mb-1">{museum.name}</div>
+        <div className="text-white text-sm drop-shadow mb-0.5">{getLocation(museum.city, museum.country)}</div>
       </div>
     </div>
   );
