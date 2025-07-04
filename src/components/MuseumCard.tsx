@@ -42,10 +42,10 @@ export default function MuseumCard({ museum, userData }: MuseumCardProps) {
       </div>
       {/* Gradient overlay at bottom for text readability, always visible */}
       <div className="absolute bottom-0 left-0 w-full h-28 z-10 pointer-events-none" style={{background: 'linear-gradient(to top, rgba(0,0,0,0.7) 60%, rgba(0,0,0,0.15) 90%, rgba(0,0,0,0.0) 100%)'}} />
-      {/* Status tag at top right, only if wish or visited */}
-      {(userData.status === 'wish' || userData.status === 'visited') && (
-        <span className={`absolute top-3 right-3 z-20 px-3 py-1 rounded-full text-xs font-semibold shadow ${statusColors[userData.status]}`}>
-          {userData.status === 'wish' ? 'Wish to Visit' : 'Visited'}
+      {/* Status tag at top right, only if visited */}
+      {userData.status === 'visited' && (
+        <span className={`absolute top-3 right-3 z-20 px-3 py-1 rounded-full text-xs font-semibold shadow bg-green-200 text-green-800`}>
+          Visited
         </span>
       )}
       {/* Museum name and location */}

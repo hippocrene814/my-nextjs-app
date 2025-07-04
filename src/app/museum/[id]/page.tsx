@@ -14,14 +14,58 @@ function getLocation(city?: string, country?: string) {
 
 const PLACEHOLDER = '/placeholder-museum.svg';
 
+// Star icon SVGs
+const StarFilled = (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="#facc15" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#eab308" className="w-7 h-7">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 17.25l-6.172 3.245 1.179-6.873L2.25 9.755l6.9-1.002L12 2.25l2.85 6.503 6.9 1.002-4.757 4.867 1.179 6.873z" />
+  </svg>
+);
+const StarOutline = (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#eab308" className="w-7 h-7">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 17.25l-6.172 3.245 1.179-6.873L2.25 9.755l6.9-1.002L12 2.25l2.85 6.503 6.9 1.002-4.757 4.867 1.179 6.873z" />
+  </svg>
+);
+
 export default function MuseumDetailPage() {
   const params = useParams<{ id?: string }>() ?? {};
   const id = decodeURIComponent(params.id ?? "");
   const router = useRouter();
   const { data: session } = useSession();
+  // Use email as userId fallback
   const userId = session?.user?.email;
 
-  const { museum, user } = getMuseum(id);
+  const { museum: contextMuseum, user } = getMuseum(id);
+  const [museum, setMuseum] = useState(contextMuseum);
+  const [fetchingMuseum, setFetchingMuseum] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
+  // If not found in context, fetch from API
+  useEffect(() => {
+    if (contextMuseum) {
+      setMuseum(contextMuseum);
+      setFetchError(null);
+      return;
+    }
+    if (!id) return;
+    setFetchingMuseum(true);
+    setFetchError(null);
+    fetch(`/api/search-museums?id=${encodeURIComponent(id)}`)
+      .then(res => res.ok ? res.json() : Promise.reject('Not found'))
+      .then(data => {
+        if (data && data.museum) {
+          setMuseum(data.museum);
+          setFetchError(null);
+        } else {
+          setMuseum(undefined);
+          setFetchError('Museum not found.');
+        }
+      })
+      .catch(() => {
+        setMuseum(undefined);
+        setFetchError('Museum not found.');
+      })
+      .finally(() => setFetchingMuseum(false));
+  }, [contextMuseum, id]);
 
   // Map user.status to booleans (default)
   const [visited, setVisited] = useState(user.status === 'visited');
@@ -29,6 +73,7 @@ export default function MuseumDetailPage() {
   const [note, setNote] = useState(user.notes ?? "");
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [saved, setSaved] = useState(false);
 
   // On mount, fetch Firestore data if logged in
   useEffect(() => {
@@ -51,49 +96,32 @@ export default function MuseumDetailPage() {
     return () => { ignore = true; };
   }, [userId, museum]);
 
-  if (!museum) {
+  if (fetchingMuseum) {
+    return <div className="max-w-2xl mx-auto p-8 text-center text-gray-400">Loading...</div>;
+  }
+  if (!museum || fetchError) {
     return <div className="max-w-2xl mx-auto p-8 text-center text-gray-500">Museum not found.</div>;
   }
 
-  // Handlers for toggling status
-  const handleToggleVisited = async () => {
-    if (!userId) return;
-    const newVisited = !visited;
-    setVisited(newVisited);
-    setLoading(true);
-    try {
-      await saveUserMuseum({
-        userId,
-        museumId: museum.id,
-        visited: newVisited,
-        wish,
-        notes: note,
-      });
-    } finally {
-      setLoading(false);
-    }
+  // Handlers for toggling status (local state only)
+  const handleToggleVisited = () => {
+    setVisited((prev) => !prev);
+    setSaved(false);
   };
 
-  const handleToggleWish = async () => {
-    if (!userId) return;
-    const newWish = !wish;
-    setWish(newWish);
-    setLoading(true);
-    try {
-      await saveUserMuseum({
-        userId,
-        museumId: museum.id,
-        visited,
-        wish: newWish,
-        notes: note,
-      });
-    } finally {
-      setLoading(false);
-    }
+  const handleToggleWish = () => {
+    setWish((prev) => !prev);
+    setSaved(false);
   };
 
-  // Handler for saving notes
-  const handleSaveNotes = async () => {
+  // Handler for editing notes (local state only)
+  const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setNote(e.target.value);
+    setSaved(false);
+  };
+
+  // Handler for saving to Firestore
+  const handleSave = async () => {
     if (!userId) return;
     setLoading(true);
     try {
@@ -104,14 +132,11 @@ export default function MuseumDetailPage() {
         wish,
         notes: note,
       });
+      setSaved(true);
     } finally {
       setLoading(false);
     }
   };
-
-  if (initialLoading) {
-    return <div className="max-w-2xl mx-auto p-8 text-center text-gray-400">Loading...</div>;
-  }
 
   return (
     <div className="max-w-2xl mx-auto p-8">
@@ -139,32 +164,56 @@ export default function MuseumDetailPage() {
           </a>
         </div>
       )}
-      <div className="mb-6">
-        <label className="block font-semibold mb-2">Status:</label>
-        <div className="flex gap-4">
-          <button
-            className={`px-4 py-2 rounded ${wish ? 'bg-yellow-200 text-yellow-800' : 'bg-yellow-100 text-yellow-600'} ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-            onClick={handleToggleWish}
-            disabled={loading}
-          >Wish to Visit</button>
-          <button
-            className={`px-4 py-2 rounded ${visited ? 'bg-green-200 text-green-800' : 'bg-green-100 text-green-600'} ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-            onClick={handleToggleVisited}
-            disabled={loading}
-          >Visited</button>
-        </div>
+      {/* Wish to Visit Section */}
+      <div className="mb-6 flex items-center gap-3">
+        <span className="font-semibold">Wish to Visit:</span>
+        <button
+          aria-label={wish ? "Remove from Wish to Visit" : "Add to Wish to Visit"}
+          className={`focus:outline-none transition-transform ${wish ? 'scale-110' : 'opacity-60 hover:opacity-100'}`}
+          onClick={handleToggleWish}
+          disabled={loading}
+        >
+          {wish ? StarFilled : StarOutline}
+        </button>
+        <span className="text-sm text-gray-500">{wish ? "Added to your wish list" : "Not in wish list"}</span>
       </div>
-      <div>
+      {/* Visited Section */}
+      <div className="mb-6 flex items-center gap-3">
+        <span className="font-semibold">Visited:</span>
+        <label className="inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            checked={visited}
+            onChange={handleToggleVisited}
+            className="sr-only peer"
+            disabled={loading}
+          />
+          <div className={`w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-400 rounded-full peer peer-checked:bg-green-400 transition-all duration-200 relative`}>
+            <div className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-md transition-all duration-200 ${visited ? 'translate-x-5' : ''}`}></div>
+          </div>
+        </label>
+        <span className="text-sm text-gray-500">{visited ? "You've visited this museum" : "Not visited yet"}</span>
+      </div>
+      <div className="mb-4">
         <label className="block font-semibold mb-2">Your Notes / Reflections:</label>
         <textarea
           className="w-full min-h-[100px] p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-200"
           value={note}
-          onChange={e => setNote(e.target.value)}
-          onBlur={handleSaveNotes}
+          onChange={handleNoteChange}
           placeholder="Write your thoughts, memories, or plans..."
           disabled={loading}
         />
-        <div className="text-xs text-gray-400 mt-1">Notes are saved automatically.</div>
+        <div className="text-xs text-gray-400 mt-1">Notes are saved when you click Save.</div>
+      </div>
+      <div className="flex items-center gap-4 mt-4">
+        <button
+          className="px-6 py-2 rounded bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={handleSave}
+          disabled={loading}
+        >
+          {loading ? 'Saving...' : 'Save'}
+        </button>
+        {saved && <span className="text-green-600 font-medium">Saved!</span>}
       </div>
     </div>
   );
