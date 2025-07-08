@@ -38,6 +38,14 @@ export default function NavBar() {
         >
           Search
         </Link>
+        <Link
+          href="/visited"
+          className={`text-lg font-medium pb-1 border-b-2 transition-colors duration-200 ${
+            pathname === '/visited' ? 'border-black' : 'border-transparent text-gray-500 hover:text-black'
+          }`}
+        >
+          Visited
+        </Link>
         {/* Auth UI */}
         {status === 'loading' ? null : user ? (
           <div className="flex items-center gap-3">
