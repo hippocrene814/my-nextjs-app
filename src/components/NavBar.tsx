@@ -6,8 +6,6 @@ import { useSession, signIn, signOut } from 'next-auth/react';
 
 const navItems = [
   { href: '/', label: 'Home' },
-  { href: '/wish', label: 'Wish to Visit' },
-  { href: '/visited', label: 'Visited' },
 ];
 
 export default function NavBar() {

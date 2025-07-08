@@ -156,11 +156,20 @@ export const MuseumsProvider = ({ children }: { children: ReactNode }) => {
   });
   const didFetchFirstPage = useRef(false);
 
-  // Load user data from localStorage
+  // Load user data from localStorage (with migration/cleanup)
   useEffect(() => {
     const stored = localStorage.getItem('museumUserData');
     if (stored) {
-      dispatch({ type: 'LOAD_USER_DATA', userData: JSON.parse(stored) });
+      const parsed = JSON.parse(stored);
+      const keys = Object.keys(parsed);
+      const allValid = keys.every(k => k.startsWith('http://www.wikidata.org/entity/'));
+      if (!allValid) {
+        // Remove legacy/invalid data
+        localStorage.removeItem('museumUserData');
+        console.log('MuseumsContext: Cleared legacy/invalid userData from localStorage');
+      } else {
+        dispatch({ type: 'LOAD_USER_DATA', userData: parsed });
+      }
     }
   }, []);
 

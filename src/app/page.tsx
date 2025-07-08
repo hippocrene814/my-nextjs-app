@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useSession } from "next-auth/react";
 import { getAllUserMuseums } from "@/lib/userMuseums";
 import { getMuseums } from '../context/MuseumsContext';
-import MuseumCard from '../components/MuseumCard';
+import MuseumGrid from '../components/MuseumGrid';
 
 export default function Home() {
   const { museums, userData: contextUserData, loading, error, hasMore, fetchNextPage } = getMuseums();
@@ -33,6 +33,11 @@ export default function Home() {
           else if (doc.wish) status = 'wish';
           mapped[doc.museum_id] = { status, notes: doc.notes || "" };
         }
+        // Debug: print keys and a sample doc
+        if (docs.length > 0) {
+          console.log('userData keys:', Object.keys(mapped));
+          console.log('Sample doc.museum_id:', docs[0].museum_id);
+        }
         setUserData(mapped);
       }
       setUserDataLoading(false);
@@ -56,18 +61,11 @@ export default function Home() {
       {userDataLoading ? (
         <div className="text-center text-gray-400 mb-4">Loading your data...</div>
       ) : null}
-      <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-        {filtered.map((museum) => (
-          <MuseumCard
-            key={museum.id}
-            museum={museum}
-            userData={userData[museum.id] || { status: 'none', notes: '' }}
-          />
-        ))}
-        {filtered.length === 0 && (
-          <div className="col-span-full text-center text-gray-500">No museums found.</div>
-        )}
-      </div>
+      <MuseumGrid
+        museums={filtered}
+        userData={userData}
+        emptyMessage="No museums found."
+      />
       {error && <div className="text-red-500 text-center mt-4">{error}</div>}
       {hasMore && filtered.length > 0 && (
         <div className="flex justify-center mt-8">

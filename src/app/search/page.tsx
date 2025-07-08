@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import MuseumCard from '../../components/MuseumCard';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
+import MuseumGrid from '../../components/MuseumGrid';
 
 interface Museum {
   id: string;
@@ -225,18 +226,11 @@ export default function SearchPage() {
       </div>
       {loading && <div className="text-center text-gray-500">Loading...</div>}
       {error && <div className="text-center text-red-500 mb-4">{error}</div>}
-      <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-        {dedupedResults.map((museum) => (
-          <MuseumCard
-            key={museum.id}
-            museum={museum}
-            userData={{ status: 'none', notes: '' }}
-          />
-        ))}
-        {dedupedResults.length === 0 && query && !loading && !error && (
-          <div className="col-span-full text-center text-gray-500">No museums found.</div>
-        )}
-      </div>
+      <MuseumGrid
+        museums={dedupedResults}
+        userData={{}}
+        emptyMessage={query && !loading && !error ? 'No museums found.' : undefined}
+      />
       {hasMore && dedupedResults.length > 0 && (
         <div className="flex justify-center mt-8">
           <button
