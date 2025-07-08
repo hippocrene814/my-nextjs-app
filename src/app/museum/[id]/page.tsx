@@ -34,7 +34,7 @@ export default function MuseumDetailPage() {
   // Use email as userId fallback
   const userId = session?.user?.email;
 
-  const { museum: contextMuseum, user } = getMuseum(id);
+  const { museum: contextMuseum, user, setStatus, setNotes } = getMuseum(id);
   const [museum, setMuseum] = useState(contextMuseum);
   const [fetchingMuseum, setFetchingMuseum] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -105,18 +105,23 @@ export default function MuseumDetailPage() {
 
   // Handlers for toggling status (local state only)
   const handleToggleVisited = () => {
-    setVisited((prev) => !prev);
+    const newVisited = !visited;
+    setVisited(newVisited);
+    setStatus(museum.id, newVisited ? 'visited' : wish ? 'wish' : 'none');
     setSaved(false);
   };
 
   const handleToggleWish = () => {
-    setWish((prev) => !prev);
+    const newWish = !wish;
+    setWish(newWish);
+    setStatus(museum.id, newWish ? 'wish' : visited ? 'visited' : 'none');
     setSaved(false);
   };
 
   // Handler for editing notes (local state only)
   const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNote(e.target.value);
+    setNotes(museum.id, e.target.value);
     setSaved(false);
   };
 

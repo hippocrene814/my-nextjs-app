@@ -1,6 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useReducer, useEffect, ReactNode, useRef } from 'react';
+import { useSession } from 'next-auth/react';
+import { getAllUserMuseums } from '@/lib/userMuseums';
 
 // --- Types ---
 export type MuseumStatus = 'none' | 'wish' | 'visited';
@@ -155,6 +157,8 @@ export const MuseumsProvider = ({ children }: { children: ReactNode }) => {
     nextOffset: 0,
   });
   const didFetchFirstPage = useRef(false);
+  const { data: session } = useSession();
+  const userId = session?.user?.email;
 
   // Load user data from localStorage (with migration/cleanup)
   useEffect(() => {
@@ -172,6 +176,25 @@ export const MuseumsProvider = ({ children }: { children: ReactNode }) => {
       }
     }
   }, []);
+
+  // Load user data from Firestore on login
+  useEffect(() => {
+    if (!userId) return;
+    let ignore = false;
+    getAllUserMuseums(userId).then(docs => {
+      if (ignore) return;
+      // Convert Firestore docs to userData shape
+      const userData: Record<string, UserMuseumData> = {};
+      docs.forEach(doc => {
+        userData[doc.museum_id] = {
+          status: doc.wish ? 'wish' : doc.visited ? 'visited' : 'none',
+          notes: doc.notes || '',
+        };
+      });
+      dispatch({ type: 'LOAD_USER_DATA', userData });
+    });
+    return () => { ignore = true; };
+  }, [userId]);
 
   // Fetch only the first page on mount
   useEffect(() => {

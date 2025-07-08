@@ -1,73 +1,75 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSession } from "next-auth/react";
 import { getAllUserMuseums } from "@/lib/userMuseums";
 import { getMuseums } from '../context/MuseumsContext';
 import MuseumGrid from '../components/MuseumGrid';
 
 export default function Home() {
-  const { museums, userData: contextUserData, loading, error, hasMore, fetchNextPage } = getMuseums();
+  const { museums, userData, loading, error, hasMore, fetchNextPage } = getMuseums();
+  const [tab, setTab] = useState<'explore' | 'wish'>('explore');
   const { data: session } = useSession();
   const userId = session?.user?.email;
 
-  // Local userData state for Firestore data
-  const [userData, setUserData] = useState(contextUserData);
-  const [userDataLoading, setUserDataLoading] = useState(false);
-
-  // Fetch all user-museum docs on login
-  useEffect(() => {
-    let ignore = false;
-    async function fetchUserData() {
-      if (!userId) {
-        setUserData(contextUserData);
-        return;
-      }
-      setUserDataLoading(true);
-      const docs = await getAllUserMuseums(userId);
-      if (!ignore) {
-        // Map Firestore docs to userData shape: { [museum_id]: { status, notes } }
-        const mapped: Record<string, { status: 'none' | 'wish' | 'visited'; notes: string }> = {};
-        for (const doc of docs) {
-          let status: 'none' | 'wish' | 'visited' = 'none';
-          if (doc.visited) status = 'visited';
-          else if (doc.wish) status = 'wish';
-          mapped[doc.museum_id] = { status, notes: doc.notes || "" };
-        }
-        // Debug: print keys and a sample doc
-        if (docs.length > 0) {
-          console.log('userData keys:', Object.keys(mapped));
-          console.log('Sample doc.museum_id:', docs[0].museum_id);
-        }
-        setUserData(mapped);
-      }
-      setUserDataLoading(false);
-    }
-    fetchUserData();
-    return () => { ignore = true; };
-  }, [userId, contextUserData]);
-
   // Deduplicate by id (Wikidata entity URI)
   const seen = new Set<string>();
-  const filtered = museums.filter(m => {
+  const allMuseums = museums.filter(m => {
     if (!m.id) return false;
     if (seen.has(m.id)) return false;
     seen.add(m.id);
     return true;
   });
 
+  // Filter for wish museums
+  const wishMuseums = allMuseums.filter(m => userData[m.id]?.status === 'wish');
+
+  // Debug output
+  console.log('Current tab:', tab);
+  console.log('userData:', userData);
+  console.log('allMuseums:', allMuseums);
+  console.log('wishMuseums:', wishMuseums);
+
+  // Choose which museums to show
+  const museumsToShow = tab === 'explore' ? allMuseums : wishMuseums;
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold mb-8 mt-6 text-center">Explore Museums</h1>
-      {userDataLoading ? (
-        <div className="text-center text-gray-400 mb-4">Loading your data...</div>
-      ) : null}
+      {/* Tab Bar */}
+      <div className="flex justify-center mb-8">
+        <button
+          className={`px-6 py-2 font-semibold rounded-t-lg border-b-2 transition ${
+            tab === 'explore'
+              ? 'border-blue-600 text-blue-600 bg-white'
+              : 'border-transparent text-gray-500 bg-gray-100 hover:text-blue-600'
+          }`}
+          onClick={() => setTab('explore')}
+        >
+          Explore
+        </button>
+        <button
+          className={`px-6 py-2 font-semibold rounded-t-lg border-b-2 transition ${
+            tab === 'wish'
+              ? 'border-blue-600 text-blue-600 bg-white'
+              : 'border-transparent text-gray-500 bg-gray-100 hover:text-blue-600'
+          }`}
+          onClick={() => setTab('wish')}
+        >
+          Wish to Visit
+        </button>
+      </div>
+      {/* Content */}
       <MuseumGrid
-        museums={filtered}
+        museums={museumsToShow}
         userData={userData}
-        emptyMessage="No museums found."
+        emptyMessage={
+          tab === 'wish'
+            ? 'No museums marked as wish to visit.'
+            : 'No museums found.'
+        }
       />
       {error && <div className="text-red-500 text-center mt-4">{error}</div>}
-      {hasMore && filtered.length > 0 && (
+      {hasMore && tab === 'explore' && museumsToShow.length > 0 && (
         <div className="flex justify-center mt-8">
           <button
             className="px-6 py-2 rounded-full bg-white border border-gray-300 text-gray-800 font-semibold shadow hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
