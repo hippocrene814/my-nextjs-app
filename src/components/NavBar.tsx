@@ -1,7 +1,7 @@
 "use client";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React from 'react';
+import React, { useState } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 
 const navItems = [
@@ -12,6 +12,8 @@ export default function NavBar() {
   const pathname = usePathname();
   const { data: session, status } = useSession();
   const user = session?.user;
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
   return (
     <nav className="w-full flex items-center justify-between px-6 py-4 border-b bg-white sticky top-0 z-30" style={{background: '#fff'}}>
       <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight hover:underline focus:outline-none focus:ring-2 focus:ring-blue-200 transition">
@@ -48,15 +50,39 @@ export default function NavBar() {
         </Link>
         {/* Auth UI */}
         {status === 'loading' ? null : user ? (
-          <div className="flex items-center gap-3">
-            {user.image && <img src={user.image} alt={user.name || 'User'} className="w-8 h-8 rounded-full border" />}
-            <span className="text-base font-medium text-gray-700">{user.name || user.email}</span>
-            <button
-              onClick={() => signOut()}
-              className="px-4 py-1 rounded bg-gray-100 text-gray-700 font-medium shadow hover:bg-gray-200 transition"
-            >
-              Sign Out
-            </button>
+          <div className="relative flex items-center gap-3">
+            {user.image && (
+              <button
+                className="focus:outline-none"
+                aria-haspopup="true"
+                aria-expanded={dropdownOpen ? 'true' : 'false'}
+                onClick={() => setDropdownOpen((open) => !open)}
+                tabIndex={0}
+                type="button"
+              >
+                <img src={user.image} alt={user.name || 'User'} className="w-8 h-8 rounded-full border" />
+              </button>
+            )}
+            {/* Dropdown menu */}
+            {dropdownOpen && (
+              <div
+                className="fixed mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+                style={{
+                  right: '24px', // match page padding
+                  top: '72px', // below navbar (navbar height + gap)
+                }}
+              >
+                <div className="px-6 py-4 border-b">
+                  <span className="block text-lg font-semibold text-gray-900 truncate">{user.name || user.email}</span>
+                </div>
+                <button
+                  onClick={() => { setDropdownOpen(false); signOut(); }}
+                  className="w-full text-left px-6 py-3 text-gray-700 hover:bg-gray-100 rounded-b-lg text-base font-medium"
+                >
+                  Sign Out
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <button
