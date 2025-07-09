@@ -21,7 +21,7 @@ export default function Home() {
   });
 
   // Filter for wish museums
-  const wishMuseums = allMuseums.filter(m => userData[m.id]?.status === 'wish');
+  const wishMuseums = allMuseums.filter(m => userData[m.id]?.wish);
 
   // Debug output
   console.log('Current tab:', tab);

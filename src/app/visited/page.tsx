@@ -11,7 +11,7 @@ export default function VisitedPage() {
 
   useEffect(() => {
     const visitedIds = Object.entries(userData)
-      .filter(([_, data]) => data.status === "visited")
+      .filter(([_, data]) => data.visited)
       .map(([id]) => id);
     if (visitedIds.length === 0) {
       setVisitedMuseums([]);

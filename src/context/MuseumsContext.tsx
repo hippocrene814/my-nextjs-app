@@ -19,7 +19,8 @@ export interface Museum {
 }
 
 export interface UserMuseumData {
-  status: MuseumStatus;
+  wish: boolean;
+  visited: boolean;
   notes: string;
 }
 
@@ -34,7 +35,8 @@ export interface MuseumsState {
 
 // --- Actions ---
 type Action =
-  | { type: 'SET_STATUS'; id: string; status: MuseumStatus }
+  | { type: 'SET_WISH'; id: string; wish: boolean }
+  | { type: 'SET_VISITED'; id: string; visited: boolean }
   | { type: 'SET_NOTES'; id: string; notes: string }
   | { type: 'LOAD_USER_DATA'; userData: Record<string, UserMuseumData> }
   | { type: 'FETCH_START' }
@@ -43,14 +45,25 @@ type Action =
 
 function reducer(state: MuseumsState, action: Action): MuseumsState {
   switch (action.type) {
-    case 'SET_STATUS':
+    case 'SET_WISH':
       return {
         ...state,
         userData: {
           ...state.userData,
           [action.id]: {
             ...state.userData[action.id],
-            status: action.status,
+            wish: action.wish,
+          },
+        },
+      };
+    case 'SET_VISITED':
+      return {
+        ...state,
+        userData: {
+          ...state.userData,
+          [action.id]: {
+            ...state.userData[action.id],
+            visited: action.visited,
           },
         },
       };
@@ -103,7 +116,8 @@ function reducer(state: MuseumsState, action: Action): MuseumsState {
 
 // --- Context ---
 interface MuseumsContextProps extends MuseumsState {
-  setStatus: (id: string, status: MuseumStatus) => void;
+  setWish: (id: string, wish: boolean) => void;
+  setVisited: (id: string, visited: boolean) => void;
   setNotes: (id: string, notes: string) => void;
   fetchNextPage: () => void;
 }
@@ -187,7 +201,8 @@ export const MuseumsProvider = ({ children }: { children: ReactNode }) => {
       const userData: Record<string, UserMuseumData> = {};
       docs.forEach(doc => {
         userData[doc.museum_id] = {
-          status: doc.wish ? 'wish' : doc.visited ? 'visited' : 'none',
+          wish: !!doc.wish,
+          visited: !!doc.visited,
           notes: doc.notes || '',
         };
       });
@@ -211,8 +226,12 @@ export const MuseumsProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const setStatus = (id: string, status: MuseumStatus) => {
-    dispatch({ type: 'SET_STATUS', id, status });
+  const setWish = (id: string, wish: boolean) => {
+    dispatch({ type: 'SET_WISH', id, wish });
+  };
+
+  const setVisited = (id: string, visited: boolean) => {
+    dispatch({ type: 'SET_VISITED', id, visited });
   };
 
   const setNotes = (id: string, notes: string) => {
@@ -233,7 +252,7 @@ export const MuseumsProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <MuseumsContext.Provider value={{ ...state, setStatus, setNotes, fetchNextPage }}>
+    <MuseumsContext.Provider value={{ ...state, setWish, setVisited, setNotes, fetchNextPage }}>
       {children}
     </MuseumsContext.Provider>
   );
@@ -247,8 +266,8 @@ export function getMuseums() {
 }
 
 export function getMuseum(id: string) {
-  const { museums, userData, setStatus, setNotes } = getMuseums();
+  const { museums, userData, setWish, setVisited, setNotes } = getMuseums();
   const museum = museums.find((m) => m.id === id);
-  const user = userData[id] || { status: 'none', notes: '' };
-  return { museum, user, setStatus, setNotes };
+  const user = userData[id] || { wish: false, visited: false, notes: '' };
+  return { museum, user, setWish, setVisited, setNotes };
 } 

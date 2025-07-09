@@ -34,15 +34,26 @@ export default function MuseumDetailPage() {
   // Use email as userId fallback
   const userId = session?.user?.email;
 
-  const { museum: contextMuseum, user, setStatus, setNotes } = getMuseum(id);
+  const { museum: contextMuseum, user, setWish, setVisited, setNotes } = getMuseum(id);
   const [museum, setMuseum] = useState(contextMuseum);
   const [fetchingMuseum, setFetchingMuseum] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
+
+  // Local state for toggles
+  const [visitedLocal, setVisitedLocal] = useState(user.visited);
+  const [wishLocal, setWishLocal] = useState(user.wish);
+  const [note, setNote] = useState(user.notes ?? "");
+  const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [saved, setSaved] = useState(false);
 
   // If not found in context, fetch from API
   useEffect(() => {
     if (contextMuseum) {
       setMuseum(contextMuseum);
+      setVisitedLocal(user.visited);
+      setWishLocal(user.wish);
+      setNote(user.notes ?? "");
       setFetchError(null);
       return;
     }
@@ -54,6 +65,9 @@ export default function MuseumDetailPage() {
       .then(data => {
         if (data && data.museum) {
           setMuseum(data.museum);
+          setVisitedLocal(user.visited);
+          setWishLocal(user.wish);
+          setNote(user.notes ?? "");
           setFetchError(null);
         } else {
           setMuseum(undefined);
@@ -65,15 +79,7 @@ export default function MuseumDetailPage() {
         setFetchError('Museum not found.');
       })
       .finally(() => setFetchingMuseum(false));
-  }, [contextMuseum, id]);
-
-  // Map user.status to booleans (default)
-  const [visited, setVisited] = useState(user.status === 'visited');
-  const [wish, setWish] = useState(user.status === 'wish');
-  const [note, setNote] = useState(user.notes ?? "");
-  const [loading, setLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true);
-  const [saved, setSaved] = useState(false);
+  }, [contextMuseum, id, user.visited, user.wish, user.notes]);
 
   // On mount, fetch Firestore data if logged in
   useEffect(() => {
@@ -86,8 +92,8 @@ export default function MuseumDetailPage() {
       setInitialLoading(true);
       const doc = await getUserMuseum(userId, museum.id);
       if (!ignore && doc) {
-        setVisited(!!doc.visited);
-        setWish(!!doc.wish);
+        setVisited(museum.id, !!doc.visited);
+        setWish(museum.id, !!doc.wish);
         setNote(doc.notes || "");
       }
       setInitialLoading(false);
@@ -105,16 +111,16 @@ export default function MuseumDetailPage() {
 
   // Handlers for toggling status (local state only)
   const handleToggleVisited = () => {
-    const newVisited = !visited;
-    setVisited(newVisited);
-    setStatus(museum.id, newVisited ? 'visited' : wish ? 'wish' : 'none');
+    const newVisited = !visitedLocal;
+    setVisitedLocal(newVisited);
+    setVisited(museum.id, newVisited);
     setSaved(false);
   };
 
   const handleToggleWish = () => {
-    const newWish = !wish;
-    setWish(newWish);
-    setStatus(museum.id, newWish ? 'wish' : visited ? 'visited' : 'none');
+    const newWish = !wishLocal;
+    setWishLocal(newWish);
+    setWish(museum.id, newWish);
     setSaved(false);
   };
 
@@ -133,8 +139,8 @@ export default function MuseumDetailPage() {
       await saveUserMuseum({
         userId,
         museumId: museum.id,
-        visited,
-        wish,
+        visited: visitedLocal,
+        wish: wishLocal,
         notes: note,
       });
       setSaved(true);
@@ -173,14 +179,14 @@ export default function MuseumDetailPage() {
       <div className="mb-6 flex items-center gap-3">
         <span className="font-semibold">Wish to Visit:</span>
         <button
-          aria-label={wish ? "Remove from Wish to Visit" : "Add to Wish to Visit"}
-          className={`focus:outline-none transition-transform ${wish ? 'scale-110' : 'opacity-60 hover:opacity-100'}`}
+          aria-label={wishLocal ? "Remove from Wish to Visit" : "Add to Wish to Visit"}
+          className={`focus:outline-none transition-transform ${wishLocal ? 'scale-110' : 'opacity-60 hover:opacity-100'}`}
           onClick={handleToggleWish}
           disabled={loading}
         >
-          {wish ? StarFilled : StarOutline}
+          {wishLocal ? StarFilled : StarOutline}
         </button>
-        <span className="text-sm text-gray-500">{wish ? "Added to your wish list" : "Not in wish list"}</span>
+        <span className="text-sm text-gray-500">{wishLocal ? "Added to your wish list" : "Not in wish list"}</span>
       </div>
       {/* Visited Section */}
       <div className="mb-6 flex items-center gap-3">
@@ -188,16 +194,16 @@ export default function MuseumDetailPage() {
         <label className="inline-flex items-center cursor-pointer">
           <input
             type="checkbox"
-            checked={visited}
+            checked={visitedLocal}
             onChange={handleToggleVisited}
             className="sr-only peer"
             disabled={loading}
           />
           <div className={`w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-400 rounded-full peer peer-checked:bg-green-400 transition-all duration-200 relative`}>
-            <div className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-md transition-all duration-200 ${visited ? 'translate-x-5' : ''}`}></div>
+            <div className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full shadow-md transition-all duration-200 ${visitedLocal ? 'translate-x-5' : ''}`}></div>
           </div>
         </label>
-        <span className="text-sm text-gray-500">{visited ? "You've visited this museum" : "Not visited yet"}</span>
+        <span className="text-sm text-gray-500">{visitedLocal ? "You've visited this museum" : "Not visited yet"}</span>
       </div>
       <div className="mb-4">
         <label className="block font-semibold mb-2">Your Notes / Reflections:</label>
