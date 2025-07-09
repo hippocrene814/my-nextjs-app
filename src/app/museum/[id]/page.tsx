@@ -139,8 +139,8 @@ export default function MuseumDetailPage() {
       await saveUserMuseum({
         userId,
         museumId: museum.id,
-        visited: visitedLocal,
-        wish: wishLocal,
+        visited: visitedLocal ?? false,
+        wish: wishLocal ?? false,
         notes: note,
       });
       setSaved(true);

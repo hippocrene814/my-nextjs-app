@@ -25,8 +25,8 @@ export async function saveUserMuseum({
       {
         user_id: userId,
         museum_id: museumId,
-        visited,
-        wish,
+        visited: !!visited,
+        wish: !!wish,
         notes: notes || "",
       },
       { merge: true } // Only updates the fields you provide
