@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSession } from "next-auth/react";
 import { getAllUserMuseums } from "@/lib/userMuseums";
 import { getMuseums } from '../context/MuseumsContext';
@@ -8,6 +8,8 @@ import MuseumGrid from '../components/MuseumGrid';
 export default function Home() {
   const { museums, userData, loading, error, hasMore, fetchNextPage } = getMuseums();
   const [tab, setTab] = useState<'explore' | 'wish'>('explore');
+  const [wishPage, setWishPage] = useState(1);
+  const PAGE_SIZE = 5;
   const { data: session } = useSession();
   const userId = session?.user?.email;
 
@@ -22,15 +24,22 @@ export default function Home() {
 
   // Filter for wish museums
   const wishMuseums = allMuseums.filter(m => userData[m.id]?.wish);
+  const pagedWishMuseums = wishMuseums.slice(0, wishPage * PAGE_SIZE);
+  const canLoadMoreWish = pagedWishMuseums.length < wishMuseums.length;
 
   // Debug output
-  console.log('Current tab:', tab);
-  console.log('userData:', userData);
-  console.log('allMuseums:', allMuseums);
-  console.log('wishMuseums:', wishMuseums);
+  // console.log('Current tab:', tab);
+  // console.log('userData:', userData);
+  // console.log('allMuseums:', allMuseums);
+  // console.log('wishMuseums:', wishMuseums);
 
   // Choose which museums to show
-  const museumsToShow = tab === 'explore' ? allMuseums : wishMuseums;
+  const museumsToShow = tab === 'explore' ? allMuseums : pagedWishMuseums;
+
+  // Reset wishPage when switching tabs
+  useEffect(() => {
+    if (tab === 'wish') setWishPage(1);
+  }, [tab]);
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
@@ -69,7 +78,7 @@ export default function Home() {
         }
       />
       {error && <div className="text-red-500 text-center mt-4">{error}</div>}
-      {hasMore && tab === 'explore' && museumsToShow.length > 0 && (
+      {tab === 'explore' && hasMore && museumsToShow.length > 0 && (
         <div className="flex justify-center mt-8">
           <button
             className="px-6 py-2 rounded-full bg-white border border-gray-300 text-gray-800 font-semibold shadow hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
@@ -77,6 +86,16 @@ export default function Home() {
             disabled={loading}
           >
             {loading ? 'Loading...' : 'Load More'}
+          </button>
+        </div>
+      )}
+      {tab === 'wish' && canLoadMoreWish && (
+        <div className="flex justify-center mt-8">
+          <button
+            className="px-6 py-2 rounded-full bg-white border border-gray-300 text-gray-800 font-semibold shadow hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => setWishPage(wishPage + 1)}
+          >
+            Load More
           </button>
         </div>
       )}
