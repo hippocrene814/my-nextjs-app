@@ -1,11 +1,9 @@
 // shared/api/museums.ts
 
 import { Museum } from '../models/Museum';
-
-const PAGE_SIZE = 20;
+import { API_CONSTANTS, ERROR_MESSAGES } from '../utils/constants';
 
 export async function fetchMuseums(offset = 0): Promise<{ museums: Museum[]; hasMore: boolean }> {
-  const endpoint = 'https://query.wikidata.org/sparql';
   const query = `
     SELECT ?museum ?museumLabel ?cityLabel ?countryLabel ?desc ?website ?thumb ?logo WHERE {
       ?museum wdt:P31 wd:Q33506; # instance of museum
@@ -18,12 +16,12 @@ export async function fetchMuseums(offset = 0): Promise<{ museums: Museum[]; has
       OPTIONAL { ?museum wdt:P154 ?logo. }
       SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
     }
-    LIMIT ${PAGE_SIZE}
+    LIMIT ${API_CONSTANTS.PAGE_SIZE}
     OFFSET ${offset}
   `;
-  const url = endpoint + '?query=' + encodeURIComponent(query) + '&format=json';
+  const url = API_CONSTANTS.WIKIDATA_ENDPOINT + '?query=' + encodeURIComponent(query) + '&format=json';
   const res = await fetch(url);
-  if (!res.ok) throw new Error('Failed to fetch museums');
+  if (!res.ok) throw new Error(ERROR_MESSAGES.FETCH_MUSEUMS_FAILED);
   const data = await res.json();
   const museums: Museum[] = data.results.bindings.map((item: any) => ({
     id: item.museum.value,
@@ -35,5 +33,5 @@ export async function fetchMuseums(offset = 0): Promise<{ museums: Museum[]; has
     image: item.thumb?.value,
     logo: item.logo?.value,
   }));
-  return { museums, hasMore: museums.length === PAGE_SIZE };
+  return { museums, hasMore: museums.length === API_CONSTANTS.PAGE_SIZE };
 } 

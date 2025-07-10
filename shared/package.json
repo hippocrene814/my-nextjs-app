@@ -1,0 +1,17 @@
+{
+  "name": "@museum-app/shared",
+  "version": "1.0.0",
+  "description": "Shared types, models, and utilities for Museum App",
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": ["museum", "shared", "types", "api"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+} 
