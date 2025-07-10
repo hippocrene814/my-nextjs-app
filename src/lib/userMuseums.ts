@@ -1,5 +1,6 @@
 import { doc, setDoc, getDoc, getDocs, collection, query, where } from "firebase/firestore";
 import { db } from "./firebase";
+import { UserMuseumDoc } from '../../shared/models/UserMuseum';
 
 export async function saveUserMuseum({
     userId,
@@ -34,14 +35,6 @@ export async function saveUserMuseum({
   }
 
 // Fetch a user's museum data from Firestore
-type UserMuseumDoc = {
-  user_id: string;
-  museum_id: string;
-  visited: boolean;
-  wish: boolean;
-  notes?: string;
-};
-
 export async function getUserMuseum(userId: string, museumId: string): Promise<UserMuseumDoc | null> {
   const safeUserId = encodeURIComponent(userId);
   const safeMuseumId = encodeURIComponent(museumId);
