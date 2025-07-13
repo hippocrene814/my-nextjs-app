@@ -1,29 +1,25 @@
 {
-  "name": "my-nextjs-app",
-  "version": "0.1.0",
+  "name": "museum-app",
+  "version": "1.0.0",
   "private": true,
+  "description": "Museum App - Cross-platform application with web and mobile platforms",
+  "workspaces": [
+    "platforms/*"
+  ],
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev:web": "npm run dev --workspace=platforms/web",
+    "dev:mobile": "npm run start --workspace=platforms/mobile",
+    "build:web": "npm run build --workspace=platforms/web",
+    "build:shared": "npm run build --workspace=platforms/shared",
+    "lint:web": "npm run lint --workspace=platforms/web",
+    "lint:mobile": "npm run lint --workspace=platforms/mobile",
+    "install:all": "npm install",
+    "clean": "rm -rf node_modules platforms/*/node_modules"
   },
-  "dependencies": {
-    "firebase": "^11.10.0",
-    "next": "15.3.4",
-    "next-auth": "^4.24.11",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
-  },
-  "devDependencies": {
-    "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "15.3.4",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+  "keywords": ["museum", "cross-platform", "web", "mobile", "react-native", "nextjs"],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
   }
-}
+} 

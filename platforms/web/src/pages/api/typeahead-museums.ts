@@ -31,7 +31,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   `;
   const url = endpoint + '?query=' + encodeURIComponent(query) + '&format=json';
   try {
-    const wikidataRes = await fetch(url);
+    console.log('Fetching from Wikidata URL:', url);
+    const wikidataRes = await fetch(url, {
+      headers: {
+        'User-Agent': 'MuseumApp/1.0 (https://github.com/your-repo; your-email@example.com)'
+      }
+    });
+    console.log('Wikidata response status:', wikidataRes.status);
     if (!wikidataRes.ok) throw new Error('Failed to fetch from Wikidata');
     const data = await wikidataRes.json();
     let museums = data.results.bindings.map((item: any) => ({

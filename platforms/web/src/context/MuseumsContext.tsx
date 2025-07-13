@@ -3,8 +3,8 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { getAllUserMuseums } from '@/lib/userMuseums';
-import { Museum, MuseumStatus, UserMuseumData } from '../../shared/models/Museum';
-import { fetchMuseums } from '../../shared/api/museums';
+import { Museum, MuseumStatus, UserMuseumData } from '@museum-app/shared';
+import { fetchMuseums } from '@museum-app/shared';
 
 export interface MuseumsState {
   museums: Museum[];

@@ -22,7 +22,7 @@ export async function fetchMuseums(offset = 0): Promise<{ museums: Museum[]; has
   const url = API_CONSTANTS.WIKIDATA_ENDPOINT + '?query=' + encodeURIComponent(query) + '&format=json';
   const res = await fetch(url);
   if (!res.ok) throw new Error(ERROR_MESSAGES.FETCH_MUSEUMS_FAILED);
-  const data = await res.json();
+  const data = await res.json() as any;
   const museums: Museum[] = data.results.bindings.map((item: any) => ({
     id: item.museum.value,
     name: item.museumLabel?.value || '',

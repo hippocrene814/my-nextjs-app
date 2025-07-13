@@ -1,6 +1,6 @@
 import { doc, setDoc, getDoc, getDocs, collection, query, where } from "firebase/firestore";
 import { db } from "./firebase";
-import { UserMuseumDoc } from '../../shared/models/UserMuseum';
+import { UserMuseumDoc } from '@museum-app/shared';
 
 export async function saveUserMuseum({
     userId,
