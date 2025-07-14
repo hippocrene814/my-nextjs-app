@@ -40,7 +40,7 @@ export default function MuseumDetailPage() {
   const [fetchError, setFetchError] = useState<string | null>(null);
 
   // Local state for toggles
-  const [visitedLocal, setVisitedLocal] = useState(user.visited);
+  const [visitedLocal, setVisitedLocal] = useState(!!user.visited);
   const [wishLocal, setWishLocal] = useState(user.wish);
   const [note, setNote] = useState(user.notes ?? "");
   const [loading, setLoading] = useState(false);
@@ -51,7 +51,7 @@ export default function MuseumDetailPage() {
   useEffect(() => {
     if (contextMuseum) {
       setMuseum(contextMuseum);
-      setVisitedLocal(user.visited);
+      setVisitedLocal(!!user.visited);
       setWishLocal(user.wish);
       setNote(user.notes ?? "");
       setFetchError(null);
@@ -65,7 +65,7 @@ export default function MuseumDetailPage() {
       .then(data => {
         if (data && data.museum) {
           setMuseum(data.museum);
-          setVisitedLocal(user.visited);
+          setVisitedLocal(!!user.visited);
           setWishLocal(user.wish);
           setNote(user.notes ?? "");
           setFetchError(null);
@@ -111,7 +111,7 @@ export default function MuseumDetailPage() {
 
   // Handlers for toggling status (local state only)
   const handleToggleVisited = () => {
-    const newVisited = !visitedLocal;
+    const newVisited = !(visitedLocal ?? false);
     setVisitedLocal(newVisited);
     setVisited(museum.id, newVisited);
     setSaved(false);
@@ -194,7 +194,7 @@ export default function MuseumDetailPage() {
         <label className="inline-flex items-center cursor-pointer">
           <input
             type="checkbox"
-            checked={visitedLocal}
+            checked={visitedLocal ?? false}
             onChange={handleToggleVisited}
             className="sr-only peer"
             disabled={loading}

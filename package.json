@@ -4,15 +4,16 @@
   "private": true,
   "description": "Museum App - Cross-platform application with web and mobile platforms",
   "workspaces": [
-    "platforms/*"
+    "apps/*",
+    "packages/*"
   ],
   "scripts": {
-    "dev:web": "npm run dev --workspace=platforms/web",
-    "build:web": "npm run build --workspace=platforms/web",
-    "build:shared": "npm run build --workspace=platforms/shared",
-    "lint:web": "npm run lint --workspace=platforms/web",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "build:web": "npm run build --workspace=apps/web",
+    "build:shared": "npm run build --workspace=packages/shared",
+    "lint:web": "npm run lint --workspace=apps/web",
     "install:all": "npm install",
-    "clean": "rm -rf node_modules platforms/*/node_modules"
+    "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules"
   },
   "keywords": ["museum", "cross-platform", "web", "mobile", "react-native", "nextjs"],
   "author": "",

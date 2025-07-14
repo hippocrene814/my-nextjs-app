@@ -1,5 +1,6 @@
 import React from 'react';
 import MuseumCard from './MuseumCard';
+import { UserMuseumData } from '@museum-app/shared';
 
 interface Museum {
   id: string;
@@ -12,16 +13,9 @@ interface Museum {
   logo?: string;
 }
 
-interface UserData {
-  [museumId: string]: {
-    status: 'none' | 'wish' | 'visited';
-    notes: string;
-  };
-}
-
 interface MuseumGridProps {
   museums: Museum[];
-  userData: UserData;
+  userData: Record<string, UserMuseumData>;
   emptyMessage?: string;
 }
 
@@ -40,7 +34,7 @@ export default function MuseumGrid({ museums, userData, emptyMessage }: MuseumGr
         <MuseumCard
           key={museum.id}
           museum={museum}
-          userData={userData[museum.id] || { status: 'none', notes: '' }}
+          userData={userData[museum.id] || { wish: false, visited: false, notes: '' }}
         />
       ))}
       {museums.length === 0 && (
