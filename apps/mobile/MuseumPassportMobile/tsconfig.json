@@ -1,3 +1,15 @@
 {
-  "extends": "@react-native/typescript-config"
+  "extends": "@react-native/typescript-config",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@museum-app/shared": ["../../../packages/shared"],
+      "@museum-app/shared/*": ["../../../packages/shared/*"]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "../../../packages/shared/**/*.ts"
+  ]
 }

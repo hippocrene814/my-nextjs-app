@@ -15,10 +15,20 @@
     "install:all": "npm install",
     "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules"
   },
-  "keywords": ["museum", "cross-platform", "web", "mobile", "react-native", "nextjs"],
+  "keywords": [
+    "museum",
+    "cross-platform",
+    "web",
+    "mobile",
+    "react-native",
+    "nextjs"
+  ],
   "author": "",
   "license": "MIT",
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.27.6"
   }
-} 
+}
