@@ -7,8 +7,8 @@
 
 import { NewAppScreen } from '@react-native/new-app-screen';
 import { StatusBar, StyleSheet, useColorScheme, View, Text } from 'react-native';
-// import { API_CONSTANTS, MUSEUM_STATUS, ERROR_MESSAGES } from '@museum-app/shared';
-import { API_CONSTANTS, MUSEUM_STATUS, ERROR_MESSAGES } from '../../../packages/shared/dist';
+import { API_CONSTANTS, MUSEUM_STATUS, ERROR_MESSAGES } from '@museum-app/shared';
+// import { API_CONSTANTS, MUSEUM_STATUS, ERROR_MESSAGES } from '../../../packages/shared/dist';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';

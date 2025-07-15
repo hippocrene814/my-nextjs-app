@@ -10,11 +10,11 @@ const path = require('path');
 const config = {
   resolver: {
     alias: {
-      '@museum-app/shared': path.resolve(__dirname, '../../../packages/shared/dist'),
+      '@museum-app/shared': path.resolve(__dirname, '../../../packages/shared'),
     },
   },
   watchFolders: [
-    path.resolve(__dirname, '../../../packages/shared/dist'),
+    path.resolve(__dirname, '../../../packages/shared'),
     path.resolve(__dirname, '../../../node_modules'), 
   ],
 };
