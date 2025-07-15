@@ -6,15 +6,44 @@
  */
 
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar, View, Text, StyleSheet, Button, ScrollView } from 'react-native';
+import { fetchMuseums } from '@museum-app/shared';
 
 // Placeholder screens with navigation buttons
 function HomeScreen({ navigation }: any) {
+  const [fetchStatus, setFetchStatus] = useState<'idle' | 'loading' | 'success' | 'error'>(
+    'idle'
+  );
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    setFetchStatus('loading');
+    fetchMuseums(0)
+      .then((result) => {
+        console.log('fetchMuseums result:', result);
+        setFetchStatus('success');
+      })
+      .catch((err) => {
+        console.error('fetchMuseums error:', err);
+        setErrorMsg(err.message || 'Unknown error');
+        setFetchStatus('error');
+      });
+  }, []);
+
   return (
     <PlaceholderScreen title="Home / Explore">
       <NavButtons navigation={navigation} exclude="Home" />
+      <View style={{ marginTop: 24 }}>
+        <Text style={{ fontSize: 16, color: '#333', textAlign: 'center' }}>
+          fetchMuseums status: {fetchStatus}
+        </Text>
+        {fetchStatus === 'error' && (
+          <Text style={{ color: 'red', textAlign: 'center' }}>{errorMsg}</Text>
+        )}
+      </View>
     </PlaceholderScreen>
   );
 }
