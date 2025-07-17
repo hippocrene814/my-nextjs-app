@@ -1,12 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  SafeAreaView, 
+  FlatList, 
+  RefreshControl,
+  ActivityIndicator,
+  TouchableOpacity 
+} from 'react-native';
 import { TopBar } from '../components/TopBar';
+import { MuseumCard } from '../components/MuseumCard';
 import { COLORS, DIMENSIONS, TYPOGRAPHY, STRINGS } from '../constants/theme';
-import { fetchMuseums } from '@museum-app/shared';
+import { fetchMuseums, Museum } from '@museum-app/shared';
 
 export const HomeScreen: React.FC = () => {
-  const [fetchStatus, setFetchStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [museums, setMuseums] = useState<Museum[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
 
   const handleLoginPress = () => {
     console.log('Login pressed');
@@ -16,21 +30,97 @@ export const HomeScreen: React.FC = () => {
     console.log('Avatar pressed');
   };
 
-  // Test shared package integration
-  useEffect(() => {
-    console.log('🔗 Testing shared package integration...');
-    setFetchStatus('loading');
-    fetchMuseums(0)
-      .then((result) => {
-        console.log('✅ fetchMuseums result:', result);
-        setFetchStatus('success');
-      })
-      .catch((err) => {
-        console.error('❌ fetchMuseums error:', err);
-        setErrorMsg(err.message || 'Unknown error');
-        setFetchStatus('error');
-      });
+  const loadMuseums = useCallback(async (offset = 0, isRefresh = false) => {
+    try {
+      if (isRefresh) {
+        setRefreshing(true);
+        setError(null);
+      } else if (offset === 0) {
+        setLoading(true);
+        setError(null);
+      } else {
+        setLoadingMore(true);
+      }
+
+      const result = await fetchMuseums(offset);
+      
+      if (isRefresh || offset === 0) {
+        setMuseums(result.museums);
+      } else {
+        setMuseums(prev => [...prev, ...result.museums]);
+      }
+      
+      setHasMore(result.hasMore);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      setError(errorMessage);
+      console.error('❌ fetchMuseums error:', err);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+      setLoadingMore(false);
+    }
   }, []);
+
+  // Initial load
+  useEffect(() => {
+    loadMuseums(0);
+  }, [loadMuseums]);
+
+  const handleRefresh = useCallback(() => {
+    loadMuseums(0, true);
+  }, [loadMuseums]);
+
+  const handleLoadMore = useCallback(() => {
+    if (!loadingMore && hasMore && !loading) {
+      loadMuseums(museums.length);
+    }
+  }, [loadingMore, hasMore, loading, museums.length, loadMuseums]);
+
+  const handleMuseumPress = (museum: Museum) => {
+    console.log('Museum pressed:', museum.name);
+    // TODO: Navigate to museum details
+  };
+
+  const renderMuseumCard = ({ item }: { item: Museum }) => (
+    <MuseumCard
+      museum={item}
+      onPress={handleMuseumPress}
+    />
+  );
+
+  const renderFooter = () => {
+    if (!loadingMore) return null;
+    
+    return (
+      <View style={styles.loadingMoreContainer}>
+        <ActivityIndicator size="small" color={COLORS.primary} />
+        <Text style={styles.loadingMoreText}>Loading more museums...</Text>
+      </View>
+    );
+  };
+
+  const renderEmpty = () => {
+    if (loading) return null;
+    
+    return (
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyTitle}>No museums found</Text>
+        <Text style={styles.emptySubtitle}>
+          {error ? 'Try refreshing to load museums' : 'Check back later for new museums'}
+        </Text>
+        {error && (
+          <TouchableOpacity style={styles.retryButton} onPress={handleRefresh}>
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    );
+  };
+
+  const renderHeader = () => (
+    <Text style={styles.title}>{STRINGS.home}</Text>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -39,20 +129,34 @@ export const HomeScreen: React.FC = () => {
         onAvatarPress={handleAvatarPress}
         isLoggedIn={false}
       />
-      <View style={styles.content}>
-        <Text style={styles.title}>{STRINGS.home}</Text>
-        <Text style={styles.subtitle}>Museum list will go here</Text>
-        
-        {/* Shared package test status */}
-        <View style={styles.testContainer}>
-          <Text style={styles.testTitle}>Shared Package Test:</Text>
-          <Text style={styles.testStatus}>Status: {fetchStatus}</Text>
-          {fetchStatus === 'error' && (
-            <Text style={styles.testError}>Error: {errorMsg}</Text>
-          )}
-          <Text style={styles.testNote}>Check console for detailed logs</Text>
+      
+      {loading && museums.length === 0 ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text style={styles.loadingText}>Loading museums...</Text>
         </View>
-      </View>
+      ) : (
+        <FlatList
+          data={museums}
+          renderItem={renderMuseumCard}
+          keyExtractor={(item) => item.id}
+          ListHeaderComponent={renderHeader}
+          ListFooterComponent={renderFooter}
+          ListEmptyComponent={renderEmpty}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              colors={[COLORS.primary]}
+              tintColor={COLORS.primary}
+            />
+          }
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.1}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContent}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -62,52 +166,65 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  content: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: DIMENSIONS.spacing.md,
+  listContent: {
+    paddingTop: DIMENSIONS.spacing.md,
+    paddingBottom: DIMENSIONS.spacing.xl,
   },
   title: {
     fontSize: TYPOGRAPHY.fontSize.xxl,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     color: COLORS.onSurface,
     marginBottom: DIMENSIONS.spacing.md,
+    paddingHorizontal: DIMENSIONS.spacing.lg,
   },
-  subtitle: {
-    fontSize: TYPOGRAPHY.fontSize.md,
-    color: COLORS.onSurfaceVariant,
-    textAlign: 'center',
-    marginBottom: DIMENSIONS.spacing.xl,
-  },
-  testContainer: {
-    backgroundColor: COLORS.surface,
-    padding: DIMENSIONS.spacing.md,
-    borderRadius: DIMENSIONS.borderRadius.md,
-    borderWidth: 1,
-    borderColor: COLORS.divider,
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  testTitle: {
+  loadingText: {
     fontSize: TYPOGRAPHY.fontSize.md,
+    color: COLORS.onSurfaceVariant,
+    marginTop: DIMENSIONS.spacing.md,
+  },
+  loadingMoreContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: DIMENSIONS.spacing.lg,
+  },
+  loadingMoreText: {
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    color: COLORS.onSurfaceVariant,
+    marginLeft: DIMENSIONS.spacing.sm,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: DIMENSIONS.spacing.lg,
+  },
+  emptyTitle: {
+    fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.onSurface,
     marginBottom: DIMENSIONS.spacing.sm,
   },
-  testStatus: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
+  emptySubtitle: {
+    fontSize: TYPOGRAPHY.fontSize.md,
     color: COLORS.onSurfaceVariant,
-    marginBottom: DIMENSIONS.spacing.xs,
-  },
-  testError: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.error,
-    marginBottom: DIMENSIONS.spacing.xs,
     textAlign: 'center',
+    marginBottom: DIMENSIONS.spacing.lg,
   },
-  testNote: {
-    fontSize: TYPOGRAPHY.fontSize.xs,
-    color: COLORS.onSurfaceVariant,
-    fontStyle: 'italic',
+  retryButton: {
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: DIMENSIONS.spacing.lg,
+    paddingVertical: DIMENSIONS.spacing.md,
+    borderRadius: DIMENSIONS.borderRadius.md,
+  },
+  retryButtonText: {
+    fontSize: TYPOGRAPHY.fontSize.md,
+    fontWeight: TYPOGRAPHY.fontWeight.medium,
+    color: COLORS.onPrimary,
   },
 }); 
