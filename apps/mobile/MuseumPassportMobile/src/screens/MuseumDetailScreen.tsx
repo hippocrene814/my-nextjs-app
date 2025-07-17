@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,12 +10,16 @@ import {
   Linking,
   Switch,
   StatusBar,
+  ActivityIndicator,
+  TextInput,
 } from 'react-native';
 import { Avatar } from '../components/Avatar';
 import { COLORS, DIMENSIONS, TYPOGRAPHY, SHADOWS } from '../constants/theme';
 import { Museum } from '@museum-app/shared';
 import { TopBar } from '../components/TopBar';
-import { saveUserMuseum } from '../lib/userMuseums';
+import { saveUserMuseum, getUserMuseum } from '../lib/userMuseums';
+import { useAuth } from '../AuthContext';
+import { Snackbar } from 'react-native-paper';
 
 interface MuseumDetailScreenProps {
   route: { params: { museum: Museum } };
@@ -30,6 +34,34 @@ export const MuseumDetailScreen: React.FC<MuseumDetailScreenProps> = ({
   const [wishToVisit, setWishToVisit] = useState(false);
   const [visited, setVisited] = useState(false);
   const [notes, setNotes] = useState('');
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [initial, setInitial] = useState({ wish: false, visited: false, notes: '' });
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchUserMuseum = async () => {
+      if (!user || !museum?.id) {
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      const doc = await getUserMuseum(user.email!, museum.id);
+      if (isMounted && doc) {
+        setWishToVisit(!!doc.wish);
+        setVisited(!!doc.visited);
+        setNotes(doc.notes || '');
+        setInitial({ wish: !!doc.wish, visited: !!doc.visited, notes: doc.notes || '' });
+      } else if (isMounted) {
+        setInitial({ wish: false, visited: false, notes: '' });
+      }
+      setLoading(false);
+    };
+    fetchUserMuseum();
+    return () => { isMounted = false; };
+  }, [user, museum?.id]);
 
   const handleBackPress = () => {
     navigation.goBack();
@@ -44,6 +76,47 @@ export const MuseumDetailScreen: React.FC<MuseumDetailScreenProps> = ({
       Linking.openURL(museum.website);
     }
   };
+
+  const hasUnsavedChanges =
+    wishToVisit !== initial.wish ||
+    visited !== initial.visited ||
+    notes !== initial.notes;
+
+  const handleSave = async () => {
+    if (!user || !museum?.id) return;
+    setSaving(true);
+    setSaved(false);
+    await saveUserMuseum({
+      userId: user.email!,
+      museumId: museum.id,
+      visited,
+      wish: wishToVisit,
+      notes,
+    });
+    setInitial({ wish: wishToVisit, visited, notes });
+    setSaving(false);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="dark-content" backgroundColor={COLORS.surface} />
+        <TopBar
+          left={
+            <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
+              <Text style={styles.backIcon}>←</Text>
+            </TouchableOpacity>
+          }
+          showLogo={false}
+        />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ color: COLORS.onSurfaceVariant }}>Loading...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -119,16 +192,54 @@ export const MuseumDetailScreen: React.FC<MuseumDetailScreenProps> = ({
           {/* Notes Section */}
           <View style={styles.notesContainer}>
             <Text style={styles.notesTitle}>Your Notes / Reflections:</Text>
-            <TouchableOpacity style={styles.notesInput}>
-              <Text style={styles.notesPlaceholder}>
-                {notes || 'Add your thoughts about this museum...'}
-              </Text>
-            </TouchableOpacity>
+            <TextInput
+              style={styles.notesInput}
+              value={notes}
+              onChangeText={setNotes}
+              placeholder="Add your thoughts about this museum..."
+              placeholderTextColor={COLORS.onSurfaceVariant}
+              multiline
+              numberOfLines={5}
+              textAlignVertical="top"
+              editable={!saving && !loading}
+            />
           </View>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
+        {/* Save Button */}
+        <View style={{ marginTop: 32, alignItems: 'center' }}>
+          <TouchableOpacity
+            style={{
+              backgroundColor: hasUnsavedChanges ? COLORS.primary : COLORS.divider,
+              paddingHorizontal: 32,
+              paddingVertical: 14,
+              borderRadius: 8,
+              opacity: saving ? 0.7 : 1,
+              minWidth: 120,
+              alignItems: 'center',
+            }}
+            onPress={handleSave}
+            disabled={!hasUnsavedChanges || saving}
+          >
+            {saving ? (
+              <ActivityIndicator color={COLORS.onPrimary} />
+            ) : (
+              <Text style={{ color: hasUnsavedChanges ? COLORS.onPrimary : COLORS.onSurfaceVariant, fontWeight: 'bold' }}>
+                Save
+              </Text>
+            )}
+          </TouchableOpacity>
+          <Snackbar
+            visible={saved}
+            onDismiss={() => setSaved(false)}
+            duration={2000}
+            style={{ backgroundColor: COLORS.success }}
+          >
+            <Text style={{ color: COLORS.onPrimary }}>Saved!</Text>
+          </Snackbar>
+        </View> {/* This closes the Save Button container */}
+      </View> {/* This closes the infoContainer */}
+    </ScrollView>
+  </SafeAreaView>
+);
 };
 
 const styles = StyleSheet.create({
