@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform, StatusBar } from 'react-native';
-import { COLORS, DIMENSIONS, TYPOGRAPHY, STRINGS, SHADOWS } from '../constants/theme';
+import { View, Text, StyleSheet, Platform, StatusBar } from 'react-native';
+import { COLORS, DIMENSIONS, TYPOGRAPHY, STRINGS } from '../constants/theme';
+import { Avatar } from './Avatar';
 
 interface TopBarProps {
   onLoginPress?: () => void;
@@ -29,29 +30,11 @@ export const TopBar: React.FC<TopBarProps> = ({
       
       {/* Right user section */}
       <View style={styles.userSection}>
-        {isLoggedIn ? (
-          <TouchableOpacity
-            style={styles.avatarContainer}
-            onPress={onAvatarPress}
-            activeOpacity={0.7}
-          >
-            {userAvatar ? (
-              <Text style={styles.avatarText}>👤</Text>
-            ) : (
-              <Text style={styles.avatarText}>👤</Text>
-            )}
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            style={styles.avatarPlaceholder}
-            onPress={onLoginPress}
-            activeOpacity={0.7}
-          >
-            {/* TODO: Replace with actual placeholder image */}
-            {/* Upload placeholder image to: apps/mobile/MuseumPassportMobile/src/assets/images/avatar-placeholder.png */}
-            <Text style={styles.avatarPlaceholderText}>👤</Text>
-          </TouchableOpacity>
-        )}
+        <Avatar
+          size="md"
+          isLoggedIn={isLoggedIn}
+          onPress={isLoggedIn ? onAvatarPress : onLoginPress}
+        />
       </View>
     </View>
   );
@@ -90,42 +73,4 @@ const styles = StyleSheet.create({
     width: DIMENSIONS.avatarSize.md,
     alignItems: 'flex-end',
   },
-  avatarContainer: {
-    width: DIMENSIONS.avatarSize.md,
-    height: DIMENSIONS.avatarSize.md,
-    borderRadius: DIMENSIONS.avatarSize.md / 2,
-    backgroundColor: COLORS.primaryLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...SHADOWS.elevation[1],
-  },
-  avatarText: {
-    fontSize: DIMENSIONS.iconSize.md,
-  },
-  avatarPlaceholder: {
-    width: DIMENSIONS.avatarSize.md,
-    height: DIMENSIONS.avatarSize.md,
-    borderRadius: DIMENSIONS.avatarSize.md / 2,
-    backgroundColor: COLORS.surfaceVariant,
-    borderWidth: 1,
-    borderColor: COLORS.divider,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...SHADOWS.elevation[1],
-  },
-  avatarPlaceholderText: {
-    fontSize: DIMENSIONS.iconSize.md,
-    color: COLORS.onSurfaceVariant,
-  },
-  loginButton: {
-    paddingHorizontal: DIMENSIONS.spacing.md,
-    paddingVertical: DIMENSIONS.spacing.xs,
-    borderRadius: DIMENSIONS.borderRadius.md,
-    backgroundColor: COLORS.primary,
-  },
-  loginText: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
-    fontWeight: TYPOGRAPHY.fontWeight.medium,
-    color: COLORS.onPrimary,
-  },
-}); 
+});

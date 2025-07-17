@@ -9,12 +9,14 @@ import {
   ActivityIndicator,
   TouchableOpacity 
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { TopBar } from '../components/TopBar';
 import { MuseumCard } from '../components/MuseumCard';
 import { COLORS, DIMENSIONS, TYPOGRAPHY, STRINGS } from '../constants/theme';
 import { fetchMuseums, Museum } from '@museum-app/shared';
 
 export const HomeScreen: React.FC = () => {
+  const navigation = useNavigation();
   const [museums, setMuseums] = useState<Museum[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -79,7 +81,7 @@ export const HomeScreen: React.FC = () => {
 
   const handleMuseumPress = (museum: Museum) => {
     console.log('Museum pressed:', museum.name);
-    // TODO: Navigate to museum details
+    navigation.navigate('MuseumDetail', { museum });
   };
 
   const renderMuseumCard = ({ item }: { item: Museum }) => (
@@ -227,4 +229,4 @@ const styles = StyleSheet.create({
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.onPrimary,
   },
-}); 
+});
