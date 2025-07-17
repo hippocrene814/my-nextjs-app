@@ -47,4 +47,49 @@ export async function fetchMuseums(offset = 0): Promise<{ museums: Museum[]; has
     logo: item.logo?.value,
   }));
   return { museums, hasMore: museums.length === API_CONSTANTS.PAGE_SIZE };
+}
+
+export async function fetchMuseumsByIds(ids: string[]): Promise<Museum[]> {
+  if (!ids.length) return [];
+  // Format IDs for SPARQL: <id1> <id2> ...
+  const idFilters = ids.map(id => `(<${id}>)`).join(' ');
+  const query = `
+    SELECT ?museum ?museumLabel
+          (MIN(STR(?cityLabel)) AS ?cityLabel)
+          (MIN(STR(?countryLabel)) AS ?countryLabel)
+          (MIN(STR(?desc)) AS ?desc)
+          (MIN(STR(?website)) AS ?website)
+          (MIN(STR(?thumb)) AS ?thumb)
+          (MIN(STR(?logo)) AS ?logo)
+    WHERE {
+      VALUES (?museum) { ${idFilters} }
+      ?museum wdt:P31 wd:Q33506;
+              wdt:P17 wd:Q30.
+      OPTIONAL { ?museum wdt:P131 ?city. }
+      OPTIONAL { ?museum wdt:P17 ?country. }
+      OPTIONAL { ?museum schema:description ?desc. FILTER(LANG(?desc) = "en") }
+      OPTIONAL { ?museum wdt:P856 ?website. }
+      OPTIONAL { ?museum wdt:P18 ?thumb. }
+      OPTIONAL { ?museum wdt:P154 ?logo. }
+      SERVICE wikibase:label {
+        bd:serviceParam wikibase:language "en".
+      }
+    }
+    GROUP BY ?museum ?museumLabel
+  `;
+  const url = API_CONSTANTS.WIKIDATA_ENDPOINT + '?query=' + encodeURIComponent(query) + '&format=json';
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(ERROR_MESSAGES.FETCH_MUSEUMS_FAILED);
+  const data = await res.json() as any;
+  const museums: Museum[] = data.results.bindings.map((item: any) => ({
+    id: item.museum.value,
+    name: item.museumLabel?.value || '',
+    city: item.cityLabel?.value,
+    country: item.countryLabel?.value,
+    description: item.desc?.value,
+    website: item.website?.value,
+    image: item.thumb?.value,
+    logo: item.logo?.value,
+  }));
+  return museums;
 } 
