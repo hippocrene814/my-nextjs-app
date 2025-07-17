@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { getMuseums } from "../../context/MuseumsContext";
 import MuseumGrid from "../../components/MuseumGrid";
+import { fetchMuseumsByIds } from "@museum-app/shared/api/museums";
 
 export default function VisitedPage() {
   const { userData } = getMuseums();
@@ -21,16 +22,9 @@ export default function VisitedPage() {
     }
     setLoading(true);
     setError(null);
-    Promise.all(
-      visitedIds.map(id =>
-        fetch(`/api/search-museums?id=${encodeURIComponent(id)}`)
-          .then(res => res.ok ? res.json() : Promise.reject("Failed to fetch"))
-          .then(data => data.museum)
-          .catch(() => null)
-      )
-    )
+    fetchMuseumsByIds(visitedIds)
       .then(museums => {
-        setVisitedMuseums(museums.filter(Boolean));
+        setVisitedMuseums(museums);
       })
       .catch(err => {
         setError("Failed to load visited museums.");
