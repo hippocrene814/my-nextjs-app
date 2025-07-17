@@ -15,6 +15,7 @@ import { VisitedScreen } from './src/screens/VisitedScreen';
 import { SearchScreen } from './src/screens/SearchScreen';
 import { MuseumDetailScreen } from './src/screens/MuseumDetailScreen';
 import { COLORS, STRINGS } from './src/constants/theme';
+import { AuthProvider } from './src/AuthContext';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -75,16 +76,18 @@ function TabNavigator() {
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <StatusBar barStyle="dark-content" backgroundColor={COLORS.surface} />
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Stack.Screen name="Main" component={TabNavigator} />
-        <Stack.Screen name="MuseumDetail" component={MuseumDetailScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AuthProvider>
+      <NavigationContainer>
+        <StatusBar barStyle="dark-content" backgroundColor={COLORS.surface} />
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name="Main" component={TabNavigator} />
+          <Stack.Screen name="MuseumDetail" component={MuseumDetailScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AuthProvider>
   );
 }

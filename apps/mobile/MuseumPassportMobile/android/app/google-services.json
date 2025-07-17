@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "743294260027",
+    "project_id": "museum-passport-web",
+    "storage_bucket": "museum-passport-web.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:743294260027:android:1ea81d5bc9136fd0f99d1e",
+        "android_client_info": {
+          "package_name": "com.museumpassportmobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "743294260027-8239fb764pu2bbdre3qmal7eucktf200.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.museumpassportmobile",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "743294260027-k4v00onkfbseukv7rmja4esdjb6c0nia.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAhF3FiDsbqZ2B0Sh4x-DiH-8_22V1Z-o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "743294260027-k4v00onkfbseukv7rmja4esdjb6c0nia.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

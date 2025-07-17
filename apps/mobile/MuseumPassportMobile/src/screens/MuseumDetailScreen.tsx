@@ -15,6 +15,7 @@ import { Avatar } from '../components/Avatar';
 import { COLORS, DIMENSIONS, TYPOGRAPHY, SHADOWS } from '../constants/theme';
 import { Museum } from '@museum-app/shared';
 import { TopBar } from '../components/TopBar';
+import { saveUserMuseum } from '../lib/userMuseums';
 
 interface MuseumDetailScreenProps {
   route: { params: { museum: Museum } };
