@@ -32,6 +32,7 @@ export const COLORS = {
   
   // Overlay
   overlay: 'rgba(0, 0, 0, 0.5)',
+  yellow: '#FFD600', // Material yellow A400
 } as const;
 
 export const DIMENSIONS = {

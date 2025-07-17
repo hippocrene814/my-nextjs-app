@@ -5,6 +5,7 @@ import { Avatar } from './Avatar';
 import { useAuth } from '../AuthContext';
 import { useState } from 'react';
 import { Modal, TouchableOpacity, Image } from 'react-native';
+import MuseumIcon from '../assets/icons/museum.png';
 
 interface TopBarProps {
   left?: React.ReactNode;
@@ -38,7 +39,9 @@ export const TopBar: React.FC<TopBarProps> = ({
       </View>
       {/* Center section */}
       <View style={styles.centerSection}>
-        {center ? center : showLogo && <Text style={styles.logoText}>🏛️</Text>}
+        {center ? center : showLogo && (
+          <Image source={MuseumIcon} style={styles.logoImage} resizeMode="contain" />
+        )}
       </View>
       {/* Right section */}
       <View style={styles.rightSection}>
@@ -91,7 +94,7 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight || 0 : 0,
   },
   leftSection: {
-    width: DIMENSIONS.avatarSize.md + 24, // enough for back button or empty
+    width: DIMENSIONS.avatarSize.md,
     alignItems: 'flex-start',
     justifyContent: 'center',
   },
@@ -108,6 +111,22 @@ const styles = StyleSheet.create({
   rightSection: {
     width: DIMENSIONS.avatarSize.md,
     alignItems: 'flex-end',
+    justifyContent: 'center',
+  },
+  logoImage: {
+    width: 36,
+    height: 36,
+    marginRight: DIMENSIONS.spacing.xs,
+  },
+  backButton: {
+    paddingHorizontal: DIMENSIONS.spacing.sm,
+    paddingVertical: DIMENSIONS.spacing.xs,
+    borderRadius: DIMENSIONS.borderRadius.sm,
+    backgroundColor: 'transparent',
+  },
+  logoContainer: {
+    flex: 1,
+    alignItems: 'center',
     justifyContent: 'center',
   },
 });

@@ -20,6 +20,9 @@ import { TopBar } from '../components/TopBar';
 import { saveUserMuseum, getUserMuseum } from '../lib/userMuseums';
 import { useAuth } from '../AuthContext';
 import { Snackbar } from 'react-native-paper';
+import LeftArrowIcon from '../assets/icons/left-arrow.png';
+import StarOutlinedIcon from '../assets/icons/star-outlined.png';
+import StarFilledIcon from '../assets/icons/star-filled.png';
 
 interface MuseumDetailScreenProps {
   route: { params: { museum: Museum } };
@@ -67,6 +70,13 @@ export const MuseumDetailScreen: React.FC<MuseumDetailScreenProps> = ({
     navigation.goBack();
   };
 
+  // Define the back button once for reuse
+  const backButton = (
+    <TouchableOpacity style={[styles.backButton, { backgroundColor: 'transparent' }]} onPress={handleBackPress}>
+      <Image source={LeftArrowIcon} style={{ width: 28, height: 28, tintColor: COLORS.onSurface }} resizeMode="contain" />
+    </TouchableOpacity>
+  );
+
   const handleAvatarPress = () => {
     console.log('Avatar pressed');
   };
@@ -103,14 +113,7 @@ export const MuseumDetailScreen: React.FC<MuseumDetailScreenProps> = ({
     return (
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="dark-content" backgroundColor={COLORS.surface} />
-        <TopBar
-          left={
-            <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
-              <Text style={styles.backIcon}>←</Text>
-            </TouchableOpacity>
-          }
-          showLogo={false}
-        />
+        <TopBar left={backButton} showLogo={false} />
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <Text style={{ color: COLORS.onSurfaceVariant }}>Loading...</Text>
         </View>
@@ -122,11 +125,7 @@ export const MuseumDetailScreen: React.FC<MuseumDetailScreenProps> = ({
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.surface} />
       <TopBar
-        left={
-          <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
-            <Text style={styles.backIcon}>←</Text>
-          </TouchableOpacity>
-        }
+        left={backButton}
         showLogo={false}
         isLoggedIn={false}
         onAvatarPress={handleAvatarPress}
@@ -170,12 +169,13 @@ export const MuseumDetailScreen: React.FC<MuseumDetailScreenProps> = ({
           <View style={styles.statusContainer}>
             <View style={styles.statusRow}>
               <Text style={styles.statusLabel}>Wish to Visit:</Text>
-              <Switch
-                value={wishToVisit}
-                onValueChange={setWishToVisit}
-                trackColor={{ false: COLORS.divider, true: COLORS.secondary }}
-                thumbColor={wishToVisit ? COLORS.secondaryDark : COLORS.onSurfaceVariant}
-              />
+              <TouchableOpacity onPress={() => setWishToVisit(!wishToVisit)}>
+                <Image
+                  source={wishToVisit ? StarFilledIcon : StarOutlinedIcon}
+                  style={{ width: 32, height: 32, tintColor: COLORS.yellow }}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
             </View>
 
             <View style={styles.statusRow}>
@@ -226,7 +226,7 @@ export const MuseumDetailScreen: React.FC<MuseumDetailScreenProps> = ({
                 Save
               </Text>
             )}
-          </TouchableOpacity>
+            </TouchableOpacity>
           <Snackbar
             visible={saved}
             onDismiss={() => setSaved(false)}
@@ -237,9 +237,9 @@ export const MuseumDetailScreen: React.FC<MuseumDetailScreenProps> = ({
           </Snackbar>
         </View> {/* This closes the Save Button container */}
       </View> {/* This closes the infoContainer */}
-    </ScrollView>
-  </SafeAreaView>
-);
+      </ScrollView>
+    </SafeAreaView>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -251,7 +251,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: DIMENSIONS.spacing.sm,
     paddingVertical: DIMENSIONS.spacing.xs,
     borderRadius: DIMENSIONS.borderRadius.sm,
-    backgroundColor: COLORS.surfaceVariant,
   },
   backButtonText: {
     fontSize: TYPOGRAPHY.fontSize.md,
