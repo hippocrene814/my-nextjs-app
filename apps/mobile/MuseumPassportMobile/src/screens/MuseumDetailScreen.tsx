@@ -14,6 +14,7 @@ import {
 import { Avatar } from '../components/Avatar';
 import { COLORS, DIMENSIONS, TYPOGRAPHY, SHADOWS } from '../constants/theme';
 import { Museum } from '@museum-app/shared';
+import { TopBar } from '../components/TopBar';
 
 interface MuseumDetailScreenProps {
   route: { params: { museum: Museum } };
@@ -46,15 +47,16 @@ export const MuseumDetailScreen: React.FC<MuseumDetailScreenProps> = ({
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.surface} />
-      {/* Top Bar */}
-      <View style={styles.topBar}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
-          <Text style={styles.backButtonText}>← Back</Text>
-        </TouchableOpacity>
-        <View style={styles.spacer} />
-        <Avatar size="md" isLoggedIn={false} onPress={handleAvatarPress} />
-      </View>
-
+      <TopBar
+        left={
+          <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
+            <Text style={styles.backIcon}>←</Text>
+          </TouchableOpacity>
+        }
+        showLogo={false}
+        isLoggedIn={false}
+        onAvatarPress={handleAvatarPress}
+      />
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Hero Image */}
         <View style={styles.imageContainer}>
@@ -133,15 +135,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: DIMENSIONS.spacing.md,
-    paddingVertical: DIMENSIONS.spacing.sm,
-    backgroundColor: COLORS.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.divider,
-  },
   backButton: {
     paddingHorizontal: DIMENSIONS.spacing.sm,
     paddingVertical: DIMENSIONS.spacing.xs,
@@ -153,8 +146,10 @@ const styles = StyleSheet.create({
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     color: COLORS.onSurface,
   },
-  spacer: {
-    flex: 1,
+  backIcon: {
+    fontSize: DIMENSIONS.avatarSize.md * 0.6, // visually similar to avatar icon
+    color: COLORS.onSurface,
+    textAlign: 'center',
   },
   content: {
     flex: 1,

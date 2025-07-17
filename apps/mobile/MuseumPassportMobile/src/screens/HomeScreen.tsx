@@ -10,13 +10,19 @@ import {
   TouchableOpacity 
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { TopBar } from '../components/TopBar';
 import { MuseumCard } from '../components/MuseumCard';
 import { COLORS, DIMENSIONS, TYPOGRAPHY, STRINGS } from '../constants/theme';
 import { fetchMuseums, Museum } from '@museum-app/shared';
 
+type RootStackParamList = {
+  Main: undefined;
+  MuseumDetail: { museum: Museum };
+};
+
 export const HomeScreen: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Main'>>();
   const [museums, setMuseums] = useState<Museum[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -130,6 +136,7 @@ export const HomeScreen: React.FC = () => {
         onLoginPress={handleLoginPress}
         onAvatarPress={handleAvatarPress}
         isLoggedIn={false}
+        // showLogo and showAvatar default to true
       />
       
       {loading && museums.length === 0 ? (

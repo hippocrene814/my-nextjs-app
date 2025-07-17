@@ -4,6 +4,11 @@ import { COLORS, DIMENSIONS, TYPOGRAPHY, STRINGS } from '../constants/theme';
 import { Avatar } from './Avatar';
 
 interface TopBarProps {
+  left?: React.ReactNode;
+  center?: React.ReactNode;
+  right?: React.ReactNode;
+  showLogo?: boolean;
+  showAvatar?: boolean;
   onLoginPress?: () => void;
   onAvatarPress?: () => void;
   userAvatar?: string;
@@ -11,6 +16,11 @@ interface TopBarProps {
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
+  left,
+  center,
+  right,
+  showLogo = true,
+  showAvatar = true,
   onLoginPress,
   onAvatarPress,
   userAvatar,
@@ -19,22 +29,23 @@ export const TopBar: React.FC<TopBarProps> = ({
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.surface} />
-      {/* Left spacer for centering */}
-      <View style={styles.spacer} />
-      
-      {/* Center logo */}
-      <View style={styles.logoContainer}>
-        <Text style={styles.logoText}>🏛️</Text>
-        {/* <Text style={styles.appName}>{STRINGS.appName}</Text> */}
+      {/* Left section */}
+      <View style={styles.leftSection}>
+        {left}
       </View>
-      
-      {/* Right user section */}
-      <View style={styles.userSection}>
-        <Avatar
-          size="md"
-          isLoggedIn={isLoggedIn}
-          onPress={isLoggedIn ? onAvatarPress : onLoginPress}
-        />
+      {/* Center section */}
+      <View style={styles.centerSection}>
+        {center ? center : showLogo && <Text style={styles.logoText}>🏛️</Text>}
+      </View>
+      {/* Right section */}
+      <View style={styles.rightSection}>
+        {right ? right : showAvatar && (
+          <Avatar
+            size="md"
+            isLoggedIn={isLoggedIn}
+            onPress={isLoggedIn ? onAvatarPress : onLoginPress}
+          />
+        )}
       </View>
     </View>
   );
@@ -51,26 +62,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: DIMENSIONS.spacing.md,
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight || 0 : 0,
   },
-  spacer: {
-    width: DIMENSIONS.avatarSize.md,
+  leftSection: {
+    width: DIMENSIONS.avatarSize.md + 24, // enough for back button or empty
+    alignItems: 'flex-start',
+    justifyContent: 'center',
   },
-  logoContainer: {
+  centerSection: {
     flex: 1,
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
   },
   logoText: {
     fontSize: DIMENSIONS.iconSize.lg,
     marginRight: DIMENSIONS.spacing.xs,
   },
-  appName: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
-    fontWeight: TYPOGRAPHY.fontWeight.medium,
-    color: COLORS.onSurface,
-  },
-  userSection: {
+  rightSection: {
     width: DIMENSIONS.avatarSize.md,
     alignItems: 'flex-end',
+    justifyContent: 'center',
   },
 });
