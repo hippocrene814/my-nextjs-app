@@ -119,8 +119,13 @@ export async function fetchMuseumsTypeahead(query: string): Promise<Museum[]> {
   `;
   const url = API_CONSTANTS.WIKIDATA_ENDPOINT + '?query=' + encodeURIComponent(sparql) + '&format=json';
   try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(ERROR_MESSAGES.FETCH_MUSEUMS_FAILED);
+    // Wikidata requires a custom User-Agent for API requests from Node.js environments.
+    // Browsers and React Native will ignore this header.
+    const headers: Record<string, string> = {};
+    if (typeof process !== 'undefined' && process.release?.name === 'node') {
+      headers['User-Agent'] = 'MuseumApp/1.0 (https://github.com/your-repo; your-email@example.com)';
+    }
+    const res = await fetch(url, { headers });
     const data = await res.json() as any;
     let museums: Museum[] = data.results.bindings.map((item: any) => ({
       id: item.museum.value,
@@ -183,8 +188,13 @@ export async function fetchMuseumsSearch(query: string, offset = 0): Promise<{ m
   `;
   const url = API_CONSTANTS.WIKIDATA_ENDPOINT + '?query=' + encodeURIComponent(sparql) + '&format=json';
   try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(ERROR_MESSAGES.FETCH_MUSEUMS_FAILED);
+    // Wikidata requires a custom User-Agent for API requests from Node.js environments.
+    // Browsers and React Native will ignore this header.
+    const headers: Record<string, string> = {};
+    if (typeof process !== 'undefined' && process.release?.name === 'node') {
+      headers['User-Agent'] = 'MuseumApp/1.0 (https://github.com/your-repo; your-email@example.com)';
+    }
+    const res = await fetch(url, { headers });
     const data = await res.json() as any;
     let museums: Museum[] = data.results.bindings.map((item: any) => ({
       id: item.museum.value,

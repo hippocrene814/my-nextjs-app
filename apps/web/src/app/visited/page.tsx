@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { getMuseums } from "../../context/MuseumsContext";
 import MuseumGrid from "../../components/MuseumGrid";
-import { fetchMuseumsByIds } from "@museum-app/shared/api/museums";
+import { fetchMuseumsByIds } from "@museum-app/shared";
 
 export default function VisitedPage() {
   const { userData } = getMuseums();
