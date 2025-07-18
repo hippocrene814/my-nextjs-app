@@ -92,4 +92,120 @@ export async function fetchMuseumsByIds(ids: string[]): Promise<Museum[]> {
     logo: item.logo?.value,
   }));
   return museums;
+}
+
+/**
+ * Fetch typeahead museum results for a query string.
+ * Deduplicates and sorts (startsWith > contains, then alpha).
+ */
+export async function fetchMuseumsTypeahead(query: string): Promise<Museum[]> {
+  if (!query.trim()) return [];
+  const safeQ = query.replace(/[^\w\s-]/g, '').trim();
+  const sparql = `
+    SELECT ?museum ?museumLabel ?cityLabel ?countryLabel ?desc ?website ?thumb ?logo WHERE {
+      ?museum wdt:P31 wd:Q33506;
+              wdt:P17 wd:Q30.
+      ?museum rdfs:label ?museumLabel.
+      FILTER(CONTAINS(LCASE(?museumLabel), LCASE("${safeQ}")))
+      OPTIONAL { ?museum wdt:P131 ?city. }
+      OPTIONAL { ?museum wdt:P17 ?country. }
+      OPTIONAL { ?museum schema:description ?desc. FILTER(LANG(?desc) = "en") }
+      OPTIONAL { ?museum wdt:P856 ?website. }
+      OPTIONAL { ?museum wdt:P18 ?thumb. }
+      OPTIONAL { ?museum wdt:P154 ?logo. }
+      SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+    }
+    LIMIT ${API_CONSTANTS.TYPEAHEAD_FETCH_LIMIT}
+  `;
+  const url = API_CONSTANTS.WIKIDATA_ENDPOINT + '?query=' + encodeURIComponent(sparql) + '&format=json';
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(ERROR_MESSAGES.FETCH_MUSEUMS_FAILED);
+    const data = await res.json() as any;
+    let museums: Museum[] = data.results.bindings.map((item: any) => ({
+      id: item.museum.value,
+      name: item.museumLabel?.value || '',
+      city: item.cityLabel?.value,
+      country: item.countryLabel?.value,
+      description: item.desc?.value,
+      website: item.website?.value,
+      image: item.thumb?.value,
+      logo: item.logo?.value,
+    }));
+    // Sort: names that start with the query first, then those that contain it, then alpha
+    const qLower = safeQ.toLowerCase();
+    museums = museums.sort((a, b) => {
+      const aName = a.name.toLowerCase();
+      const bName = b.name.toLowerCase();
+      const aStarts = aName.startsWith(qLower);
+      const bStarts = bName.startsWith(qLower);
+      if (aStarts && !bStarts) return -1;
+      if (!aStarts && bStarts) return 1;
+      return aName.localeCompare(bName);
+    });
+    // Deduplicate by id
+    const seen = new Set<string>();
+    museums = museums.filter(m => {
+      if (!m.id || seen.has(m.id)) return false;
+      seen.add(m.id);
+      return true;
+    });
+    return museums.slice(0, API_CONSTANTS.TYPEAHEAD_DISPLAY_LIMIT);
+  } catch (err) {
+    // Optionally log error
+    return [];
+  }
+}
+
+/**
+ * Fetch paginated museum search results for a query string.
+ * Deduplicates and returns hasMore flag.
+ */
+export async function fetchMuseumsSearch(query: string, offset = 0): Promise<{ museums: Museum[]; hasMore: boolean }> {
+  if (!query.trim()) return { museums: [], hasMore: false };
+  const safeQ = query.replace(/[^\w\s-]/g, '').trim();
+  const sparql = `
+    SELECT ?museum ?museumLabel ?cityLabel ?countryLabel ?desc ?website ?thumb ?logo WHERE {
+      ?museum wdt:P31 wd:Q33506;
+              wdt:P17 wd:Q30.
+      ?museum rdfs:label ?museumLabel.
+      FILTER(CONTAINS(LCASE(?museumLabel), LCASE("${safeQ}")))
+      OPTIONAL { ?museum wdt:P131 ?city. }
+      OPTIONAL { ?museum wdt:P17 ?country. }
+      OPTIONAL { ?museum schema:description ?desc. FILTER(LANG(?desc) = "en") }
+      OPTIONAL { ?museum wdt:P856 ?website. }
+      OPTIONAL { ?museum wdt:P18 ?thumb. }
+      OPTIONAL { ?museum wdt:P154 ?logo. }
+      SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+    }
+    LIMIT ${API_CONSTANTS.SEARCH_FETCH_LIMIT}
+    OFFSET ${offset}
+  `;
+  const url = API_CONSTANTS.WIKIDATA_ENDPOINT + '?query=' + encodeURIComponent(sparql) + '&format=json';
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(ERROR_MESSAGES.FETCH_MUSEUMS_FAILED);
+    const data = await res.json() as any;
+    let museums: Museum[] = data.results.bindings.map((item: any) => ({
+      id: item.museum.value,
+      name: item.museumLabel?.value || '',
+      city: item.cityLabel?.value,
+      country: item.countryLabel?.value,
+      description: item.desc?.value,
+      website: item.website?.value,
+      image: item.thumb?.value,
+      logo: item.logo?.value,
+    }));
+    // Deduplicate by id
+    const seen = new Set<string>();
+    museums = museums.filter(m => {
+      if (!m.id || seen.has(m.id)) return false;
+      seen.add(m.id);
+      return true;
+    });
+    return { museums, hasMore: museums.length === API_CONSTANTS.SEARCH_FETCH_LIMIT };
+  } catch (err) {
+    // Optionally log error
+    return { museums: [], hasMore: false };
+  }
 } 

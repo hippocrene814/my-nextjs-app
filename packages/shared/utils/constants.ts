@@ -2,13 +2,10 @@
 
 export const API_CONSTANTS = {
   PAGE_SIZE: 20,
+  SEARCH_FETCH_LIMIT: 30,
+  TYPEAHEAD_FETCH_LIMIT: 20,
+  TYPEAHEAD_DISPLAY_LIMIT: 7,
   WIKIDATA_ENDPOINT: 'https://query.wikidata.org/sparql',
-} as const;
-
-export const MUSEUM_STATUS = {
-  NONE: 'none',
-  WISH: 'wish', 
-  VISITED: 'visited',
 } as const;
 
 export const ERROR_MESSAGES = {
