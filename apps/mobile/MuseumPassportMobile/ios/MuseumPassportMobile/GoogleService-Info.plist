@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyCAhF3FiDsbqZ2B0Sh4x-DiH-8_22V1Z-o</string>
+	<key>GCM_SENDER_ID</key>
+	<string>743294260027</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.museumpassportmobile</string>
+	<key>PROJECT_ID</key>
+	<string>museum-passport-web</string>
+	<key>STORAGE_BUCKET</key>
+	<string>museum-passport-web.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:743294260027:ios:1ea81d5bc9136fd0f99d1e</string>
+	<key>DATABASE_URL</key>
+	<string>https://museum-passport-web-default-rtdb.firebaseio.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.743294260027-k4v00onkfbseukv7rmja4esdjb6c0nia</string>
+	<key>CLIENT_ID</key>
+	<string>743294260027-k4v00onkfbseukv7rmja4esdjb6c0nia.apps.googleusercontent.com</string>
+</dict>
+</plist> 
