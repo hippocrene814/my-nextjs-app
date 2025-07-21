@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visited - Museum Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 h-screen flex flex-col">
+    <!-- Status Bar -->
+    <div class="bg-white h-8 flex items-center justify-between px-4 pt-1">
+        <span class="text-xs font-medium text-gray-900">9:41</span>
+        <div class="flex items-center space-x-1">
+            <i class="fas fa-signal text-gray-900 text-xs"></i>
+            <i class="fas fa-wifi text-gray-900 text-xs"></i>
+            <i class="fas fa-battery-three-quarters text-gray-900 text-xs"></i>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="bg-white px-4 py-3 shadow-sm">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-lg font-bold text-gray-900">Visited Museums</h1>
+                <p class="text-xs text-gray-600">24 museums in your collection</p>
+            </div>
+            <button class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-filter text-gray-600 text-xs"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="bg-white px-4 py-2 border-b border-gray-200">
+        <div class="flex space-x-3">
+            <button class="px-3 py-1 bg-primary-600 text-white rounded-full text-xs font-medium">
+                All
+            </button>
+            <button class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
+                This Year
+            </button>
+            <button class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
+                Favorites
+            </button>
+        </div>
+    </div>
+
+    <!-- Museum List -->
+    <div class="flex-1 px-4 py-3 overflow-y-auto">
+        <div class="space-y-3">
+            <!-- Museum Item 1 -->
+            <div class="bg-white rounded-xl p-3 shadow-sm">
+                <div class="flex items-start space-x-3">
+                    <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                        <i class="fas fa-landmark text-white text-lg"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="font-semibold text-gray-900 text-sm">Metropolitan Museum</h3>
+                                <p class="text-xs text-gray-600">New York, NY</p>
+                                <div class="flex items-center space-x-2 mt-1">
+                                    <div class="flex items-center space-x-1">
+                                        <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                        <span class="text-xs text-gray-600">4.8</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500">•</span>
+                                    <span class="text-xs text-gray-500">Visited 2 days ago</span>
+                                </div>
+                            </div>
+                            <button class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-heart text-red-500 text-xs"></i>
+                            </button>
+                        </div>
+                        <div class="flex items-center space-x-2 mt-2">
+                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Art</span>
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">History</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Museum Item 2 -->
+            <div class="bg-white rounded-xl p-3 shadow-sm">
+                <div class="flex items-start space-x-3">
+                    <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
+                        <i class="fas fa-palette text-white text-lg"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="font-semibold text-gray-900 text-sm">Louvre Museum</h3>
+                                <p class="text-xs text-gray-600">Paris, France</p>
+                                <div class="flex items-center space-x-2 mt-1">
+                                    <div class="flex items-center space-x-1">
+                                        <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                        <span class="text-xs text-gray-600">4.9</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500">•</span>
+                                    <span class="text-xs text-gray-500">Visited 1 week ago</span>
+                                </div>
+                            </div>
+                            <button class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center">
+                                <i class="far fa-heart text-gray-400 text-xs"></i>
+                            </button>
+                        </div>
+                        <div class="flex items-center space-x-2 mt-2">
+                            <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">Art</span>
+                            <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">Sculpture</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Museum Item 3 -->
+            <div class="bg-white rounded-xl p-3 shadow-sm">
+                <div class="flex items-start space-x-3">
+                    <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-green-400 to-teal-500 flex items-center justify-center">
+                        <i class="fas fa-university text-white text-lg"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="font-semibold text-gray-900 text-sm">British Museum</h3>
+                                <p class="text-xs text-gray-600">London, UK</p>
+                                <div class="flex items-center space-x-2 mt-1">
+                                    <div class="flex items-center space-x-1">
+                                        <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                        <span class="text-xs text-gray-600">4.7</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500">•</span>
+                                    <span class="text-xs text-gray-500">Visited 2 weeks ago</span>
+                                </div>
+                            </div>
+                            <button class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-heart text-red-500 text-xs"></i>
+                            </button>
+                        </div>
+                        <div class="flex items-center space-x-2 mt-2">
+                            <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">Archaeology</span>
+                            <span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">History</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Museum Item 4 -->
+            <div class="bg-white rounded-xl p-3 shadow-sm">
+                <div class="flex items-start space-x-3">
+                    <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-indigo-400 to-pink-500 flex items-center justify-center">
+                        <i class="fas fa-paint-brush text-white text-lg"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="font-semibold text-gray-900 text-sm">Museum of Modern Art</h3>
+                                <p class="text-xs text-gray-600">New York, NY</p>
+                                <div class="flex items-center space-x-2 mt-1">
+                                    <div class="flex items-center space-x-1">
+                                        <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                        <span class="text-xs text-gray-600">4.6</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500">•</span>
+                                    <span class="text-xs text-gray-500">Visited 1 month ago</span>
+                                </div>
+                            </div>
+                            <button class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center">
+                                <i class="far fa-heart text-gray-400 text-xs"></i>
+                            </button>
+                        </div>
+                        <div class="flex items-center space-x-2 mt-2">
+                            <span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-full">Modern Art</span>
+                            <span class="px-2 py-1 bg-pink-100 text-pink-700 text-xs rounded-full">Contemporary</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Museum Item 5 -->
+            <div class="bg-white rounded-xl p-3 shadow-sm">
+                <div class="flex items-start space-x-3">
+                    <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center">
+                        <i class="fas fa-dna text-white text-lg"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="font-semibold text-gray-900 text-sm">Natural History Museum</h3>
+                                <p class="text-xs text-gray-600">London, UK</p>
+                                <div class="flex items-center space-x-2 mt-1">
+                                    <div class="flex items-center space-x-1">
+                                        <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                        <span class="text-xs text-gray-600">4.5</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500">•</span>
+                                    <span class="text-xs text-gray-500">Visited 2 months ago</span>
+                                </div>
+                            </div>
+                            <button class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-heart text-red-500 text-xs"></i>
+                            </button>
+                        </div>
+                        <div class="flex items-center space-x-2 mt-2">
+                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Science</span>
+                            <span class="px-2 py-1 bg-teal-100 text-teal-700 text-xs rounded-full">Natural History</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bg-white border-t border-gray-200 px-4 py-2">
+        <div class="flex items-center justify-around">
+            <button class="flex flex-col items-center py-1 px-3 rounded-lg">
+                <i class="fas fa-home text-gray-400 text-sm mb-1"></i>
+                <span class="text-xs font-medium text-gray-400">Home</span>
+            </button>
+            <button class="flex flex-col items-center py-1 px-3 rounded-lg bg-primary-50">
+                <i class="fas fa-check-circle text-primary-600 text-sm mb-1"></i>
+                <span class="text-xs font-medium text-primary-600">Visited</span>
+            </button>
+            <button class="flex flex-col items-center py-1 px-3 rounded-lg">
+                <i class="fas fa-search text-gray-400 text-sm mb-1"></i>
+                <span class="text-xs font-medium text-gray-400">Search</span>
+            </button>
+        </div>
+    </div>
+</body>
+</html> 

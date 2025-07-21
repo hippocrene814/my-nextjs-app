@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Museum Detail - Museum Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 h-screen flex flex-col">
+    <!-- Status Bar -->
+    <div class="bg-white h-8 flex items-center justify-between px-4 pt-1">
+        <span class="text-xs font-medium text-gray-900">9:41</span>
+        <div class="flex items-center space-x-1">
+            <i class="fas fa-signal text-gray-900 text-xs"></i>
+            <i class="fas fa-wifi text-gray-900 text-xs"></i>
+            <i class="fas fa-battery-three-quarters text-gray-900 text-xs"></i>
+        </div>
+    </div>
+
+    <!-- Hero Image with Back Button -->
+    <div class="relative h-48">
+        <div class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+            <i class="fas fa-landmark text-white text-5xl"></i>
+        </div>
+        <div class="absolute inset-0 bg-black bg-opacity-30"></div>
+        
+        <!-- Back Button -->
+        <button class="absolute top-3 left-3 w-8 h-8 bg-white bg-opacity-90 rounded-full flex items-center justify-center shadow-sm">
+            <i class="fas fa-arrow-left text-gray-900 text-xs"></i>
+        </button>
+        
+        <!-- Action Buttons -->
+        <div class="absolute top-3 right-3 flex space-x-2">
+            <button class="w-8 h-8 bg-white bg-opacity-90 rounded-full flex items-center justify-center shadow-sm">
+                <i class="fas fa-share text-gray-900 text-xs"></i>
+            </button>
+            <button class="w-8 h-8 bg-white bg-opacity-90 rounded-full flex items-center justify-center shadow-sm">
+                <i class="far fa-heart text-gray-900 text-xs"></i>
+            </button>
+        </div>
+
+        <!-- Museum Info Overlay -->
+        <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+            <div class="flex items-center space-x-2 mb-1">
+                <div class="flex items-center space-x-1">
+                    <i class="fas fa-star text-yellow-400 text-xs"></i>
+                    <span class="font-medium text-sm">4.8</span>
+                </div>
+                <span class="text-white text-opacity-80 text-xs">•</span>
+                <span class="text-white text-opacity-80 text-xs">2,847 reviews</span>
+            </div>
+            <h1 class="text-lg font-bold mb-1">Metropolitan Museum</h1>
+            <p class="text-white text-opacity-90 text-xs">New York, NY</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 overflow-y-auto">
+        <!-- Quick Actions -->
+        <div class="bg-white px-4 py-3 border-b border-gray-200">
+            <div class="flex space-x-3">
+                <button class="flex-1 bg-primary-600 text-white py-2 rounded-xl font-medium text-sm">
+                    <i class="fas fa-check mr-2 text-xs"></i>Mark as Visited
+                </button>
+                <button class="flex-1 bg-gray-100 text-gray-900 py-2 rounded-xl font-medium text-sm">
+                    <i class="fas fa-map-marker-alt mr-2 text-xs"></i>Directions
+                </button>
+            </div>
+        </div>
+
+        <!-- Museum Details -->
+        <div class="bg-white px-4 py-3">
+            <h2 class="text-sm font-semibold text-gray-900 mb-2">About</h2>
+            <p class="text-gray-600 text-xs leading-relaxed mb-3">
+                The Metropolitan Museum of Art is one of the world's largest and most prestigious art museums. 
+                Founded in 1870, it houses over 2 million works spanning 5,000 years of world culture, from 
+                prehistory to the present day.
+            </p>
+            
+            <!-- Categories -->
+            <div class="flex items-center space-x-2 mb-3">
+                <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Art</span>
+                <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">History</span>
+                <span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">Culture</span>
+            </div>
+
+            <!-- Key Information -->
+            <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-clock text-gray-400 w-4 text-xs"></i>
+                        <span class="text-gray-600 text-xs">Hours</span>
+                    </div>
+                    <span class="text-gray-900 font-medium text-xs">10:00 AM - 5:30 PM</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-dollar-sign text-gray-400 w-4 text-xs"></i>
+                        <span class="text-gray-600 text-xs">Admission</span>
+                    </div>
+                    <span class="text-gray-900 font-medium text-xs">$25 (Adults)</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-phone text-gray-400 w-4 text-xs"></i>
+                        <span class="text-gray-600 text-xs">Phone</span>
+                    </div>
+                    <span class="text-gray-900 font-medium text-xs">(212) 535-7710</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-globe text-gray-400 w-4 text-xs"></i>
+                        <span class="text-gray-600 text-xs">Website</span>
+                    </div>
+                    <span class="text-primary-600 font-medium text-xs">metmuseum.org</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Popular Exhibitions -->
+        <div class="bg-white px-4 py-3 border-t border-gray-200">
+            <h2 class="text-sm font-semibold text-gray-900 mb-2">Current Exhibitions</h2>
+            <div class="space-y-2">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
+                        <i class="fas fa-palette text-white text-xs"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-medium text-gray-900 text-xs">European Paintings</h3>
+                        <p class="text-xs text-gray-600">Through December 2024</p>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-green-400 to-teal-500 flex items-center justify-center">
+                        <i class="fas fa-university text-white text-xs"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-medium text-gray-900 text-xs">Ancient Egypt</h3>
+                        <p class="text-xs text-gray-600">Permanent Collection</p>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visitor Tips -->
+        <div class="bg-white px-4 py-3 border-t border-gray-200">
+            <h2 class="text-sm font-semibold text-gray-900 mb-2">Visitor Tips</h2>
+            <div class="space-y-1">
+                <div class="flex items-start space-x-2">
+                    <i class="fas fa-lightbulb text-yellow-500 mt-1 text-xs"></i>
+                    <p class="text-xs text-gray-600">Visit early morning to avoid crowds</p>
+                </div>
+                <div class="flex items-start space-x-2">
+                    <i class="fas fa-lightbulb text-yellow-500 mt-1 text-xs"></i>
+                    <p class="text-xs text-gray-600">Free admission for NYC residents</p>
+                </div>
+                <div class="flex items-start space-x-2">
+                    <i class="fas fa-lightbulb text-yellow-500 mt-1 text-xs"></i>
+                    <p class="text-xs text-gray-600">Audio guides available for $7</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reviews Preview -->
+        <div class="bg-white px-4 py-3 border-t border-gray-200">
+            <div class="flex items-center justify-between mb-2">
+                <h2 class="text-sm font-semibold text-gray-900">Reviews</h2>
+                <button class="text-primary-600 text-xs font-medium">View All</button>
+            </div>
+            <div class="space-y-2">
+                <div class="flex items-start space-x-2">
+                    <div class="w-6 h-6 bg-primary-100 rounded-full flex items-center justify-center">
+                        <span class="text-primary-600 font-medium text-xs">S</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-2 mb-1">
+                            <span class="font-medium text-gray-900 text-xs">Sarah M.</span>
+                            <div class="flex items-center space-x-1">
+                                <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                <i class="fas fa-star text-yellow-400 text-xs"></i>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-600">Amazing collection! The European paintings section is incredible. Highly recommend spending a full day here.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bg-white border-t border-gray-200 px-4 py-2">
+        <div class="flex items-center justify-around">
+            <button class="flex flex-col items-center py-1 px-3 rounded-lg">
+                <i class="fas fa-home text-gray-400 text-sm mb-1"></i>
+                <span class="text-xs font-medium text-gray-400">Home</span>
+            </button>
+            <button class="flex flex-col items-center py-1 px-3 rounded-lg">
+                <i class="fas fa-check-circle text-gray-400 text-sm mb-1"></i>
+                <span class="text-xs font-medium text-gray-400">Visited</span>
+            </button>
+            <button class="flex flex-col items-center py-1 px-3 rounded-lg">
+                <i class="fas fa-search text-gray-400 text-sm mb-1"></i>
+                <span class="text-xs font-medium text-gray-400">Search</span>
+            </button>
+        </div>
+    </div>
+</body>
+</html> 
