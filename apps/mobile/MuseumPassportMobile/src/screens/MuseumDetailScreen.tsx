@@ -204,40 +204,43 @@ export const MuseumDetailScreen: React.FC<MuseumDetailScreenProps> = ({
               editable={!saving && !loading}
             />
           </View>
-        {/* Save Button */}
-        <View style={{ marginTop: 32, alignItems: 'center' }}>
-          <TouchableOpacity
-            style={{
-              backgroundColor: hasUnsavedChanges ? COLORS.primary : COLORS.divider,
-              paddingHorizontal: 32,
-              paddingVertical: 14,
-              borderRadius: 8,
-              opacity: saving ? 0.7 : 1,
-              minWidth: 120,
-              alignItems: 'center',
-            }}
-            onPress={handleSave}
-            disabled={!hasUnsavedChanges || saving}
-          >
-            {saving ? (
-              <ActivityIndicator color={COLORS.onPrimary} />
-            ) : (
-              <Text style={{ color: hasUnsavedChanges ? COLORS.onPrimary : COLORS.onSurfaceVariant, fontWeight: 'bold' }}>
-                Save
-              </Text>
-            )}
+
+          {/* Save Button */}
+          <View style={{ marginTop: 32, alignItems: 'center' }}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: hasUnsavedChanges ? COLORS.primary : COLORS.divider,
+                paddingHorizontal: 32,
+                paddingVertical: 14,
+                borderRadius: 8,
+                opacity: saving ? 0.7 : 1,
+                minWidth: 120,
+                alignItems: 'center',
+              }}
+              onPress={handleSave}
+              disabled={!hasUnsavedChanges || saving}
+            >
+              {saving ? (
+                <ActivityIndicator color={COLORS.onPrimary} />
+              ) : (
+                <Text style={{ color: hasUnsavedChanges ? COLORS.onPrimary : COLORS.onSurfaceVariant, fontWeight: 'bold' }}>
+                  Save
+                </Text>
+              )}
             </TouchableOpacity>
-          <Snackbar
-            visible={saved}
-            onDismiss={() => setSaved(false)}
-            duration={2000}
-            style={{ backgroundColor: COLORS.success }}
-          >
-            <Text style={{ color: COLORS.onPrimary }}>Saved!</Text>
-          </Snackbar>
-        </View> {/* This closes the Save Button container */}
-      </View> {/* This closes the infoContainer */}
+          </View>
+        </View>
       </ScrollView>
+      
+      {/* Snackbar moved outside ScrollView */}
+      <Snackbar
+        visible={saved}
+        onDismiss={() => setSaved(false)}
+        duration={2000}
+        style={{ backgroundColor: COLORS.success }}
+      >
+        Saved!
+      </Snackbar>
     </SafeAreaView>
   );
 };
