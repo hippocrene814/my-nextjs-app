@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Platform, StatusBar } from 'react-native';
-import { COLORS, DIMENSIONS, TYPOGRAPHY, STRINGS } from '../constants/theme';
+import { COLORS } from '@museum-app/shared/theme/colors';
+import { DIMENSIONS, TYPOGRAPHY, STRINGS } from '../constants/theme';
 import { Avatar } from './Avatar';
 import { useAuth } from '../AuthContext';
 import { useState } from 'react';

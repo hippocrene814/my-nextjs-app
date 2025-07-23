@@ -8,4 +8,5 @@ export * from './models/UserMuseum';
 export * from './api/museums';
 
 // Export all utilities
-export * from './utils/constants'; 
+export * from './utils/constants';
+export * from './theme/colors'; 

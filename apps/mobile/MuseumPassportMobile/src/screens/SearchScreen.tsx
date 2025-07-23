@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TextInput, TouchableOpacity, FlatList, Keyboard, Platform, StatusBar, Image } from 'react-native';
 import { TopBar } from '../components/TopBar';
-import { COLORS, DIMENSIONS, TYPOGRAPHY, STRINGS } from '../constants/theme';
+import { COLORS } from '@museum-app/shared/theme/colors';
+import { DIMENSIONS, TYPOGRAPHY, STRINGS } from '../constants/theme';
 import { fetchMuseumsTypeahead, fetchMuseumsSearch } from '@museum-app/shared/api/museums';
 import { Museum } from '@museum-app/shared/models/Museum';
 import { useNavigation } from '@react-navigation/native';

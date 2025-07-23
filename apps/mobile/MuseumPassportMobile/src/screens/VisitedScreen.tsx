@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ActivityIndicator, FlatList, RefreshControl, TouchableOpacity } from 'react-native';
 import { TopBar } from '../components/TopBar';
-import { COLORS, DIMENSIONS, TYPOGRAPHY, STRINGS } from '../constants/theme';
+import { COLORS } from '@museum-app/shared/theme/colors';
+import { DIMENSIONS, TYPOGRAPHY, STRINGS } from '../constants/theme';
 import { useAuth } from '../AuthContext';
 import { getAllUserMuseums } from '../lib/userMuseums';
 import { fetchMuseumsByIds } from '@museum-app/shared/api/museums';

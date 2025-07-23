@@ -9,7 +9,8 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Museum } from '@museum-app/shared';
-import { COLORS, DIMENSIONS, TYPOGRAPHY, SHADOWS } from '../constants/theme';
+import { COLORS } from '@museum-app/shared/theme/colors';
+import { DIMENSIONS, TYPOGRAPHY, SHADOWS } from '../constants/theme';
 
 const { width: screenWidth } = Dimensions.get('window');
 const cardWidth = screenWidth - (DIMENSIONS.spacing.lg * 2); // More spacing on sides

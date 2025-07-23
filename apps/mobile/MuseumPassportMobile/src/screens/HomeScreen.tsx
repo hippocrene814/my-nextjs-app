@@ -13,8 +13,9 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { TopBar } from '../components/TopBar';
 import { MuseumCard } from '../components/MuseumCard';
-import { COLORS, DIMENSIONS, TYPOGRAPHY, STRINGS } from '../constants/theme';
+import { COLORS } from '@museum-app/shared/theme/colors';
 import { fetchMuseums, Museum } from '@museum-app/shared';
+import { DIMENSIONS, TYPOGRAPHY, STRINGS } from '../constants/theme';
 
 type RootStackParamList = {
   Main: undefined;

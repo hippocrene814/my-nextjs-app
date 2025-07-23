@@ -5,7 +5,8 @@ import {
   Text,
   StyleSheet,
 } from 'react-native';
-import { COLORS, DIMENSIONS, TYPOGRAPHY } from '../constants/theme';
+import { COLORS } from '@museum-app/shared/theme/colors';
+import { DIMENSIONS, TYPOGRAPHY } from '../constants/theme';
 
 interface AvatarProps {
   size?: 'sm' | 'md' | 'lg';

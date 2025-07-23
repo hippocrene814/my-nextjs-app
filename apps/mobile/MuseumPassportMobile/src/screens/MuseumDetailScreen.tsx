@@ -14,7 +14,8 @@ import {
   TextInput,
 } from 'react-native';
 import { Avatar } from '../components/Avatar';
-import { COLORS, DIMENSIONS, TYPOGRAPHY, SHADOWS } from '../constants/theme';
+import { COLORS } from '@museum-app/shared/theme/colors';
+import { DIMENSIONS, TYPOGRAPHY, SHADOWS } from '../constants/theme';
 import { Museum } from '@museum-app/shared';
 import { TopBar } from '../components/TopBar';
 import { saveUserMuseum, getUserMuseum } from '../lib/userMuseums';
