@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useSession } from "next-auth/react";
 import { saveUserMuseum, getUserMuseum } from "@/lib/userMuseums";
 import { getMuseum } from '../../../context/MuseumsContext';
+import { COLORS } from '@museum-app/shared/theme/colors';
 
 function getLocation(city?: string, country?: string) {
   if (city && country) return `${city}, ${country}`;
@@ -16,12 +17,12 @@ const PLACEHOLDER = '/placeholder-museum.svg';
 
 // Star icon SVGs
 const StarFilled = (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="#facc15" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#eab308" className="w-7 h-7">
+  <svg xmlns="http://www.w3.org/2000/svg" fill={COLORS.yellow} viewBox="0 0 24 24" strokeWidth={1.5} stroke={COLORS.secondary} className="w-7 h-7">
     <path strokeLinecap="round" strokeLinejoin="round" d="M12 17.25l-6.172 3.245 1.179-6.873L2.25 9.755l6.9-1.002L12 2.25l2.85 6.503 6.9 1.002-4.757 4.867 1.179 6.873z" />
   </svg>
 );
 const StarOutline = (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#eab308" className="w-7 h-7">
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke={COLORS.secondary} className="w-7 h-7">
     <path strokeLinecap="round" strokeLinejoin="round" d="M12 17.25l-6.172 3.245 1.179-6.873L2.25 9.755l6.9-1.002L12 2.25l2.85 6.503 6.9 1.002-4.757 4.867 1.179 6.873z" />
   </svg>
 );

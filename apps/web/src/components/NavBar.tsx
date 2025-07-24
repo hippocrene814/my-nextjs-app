@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { useState } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
+import { COLORS } from '@museum-app/shared/theme/colors';
 
 const navItems = [
   { href: '/', label: 'Home' },
@@ -15,9 +16,9 @@ export default function NavBar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   return (
-    <nav className="w-full flex items-center justify-between px-6 py-4 border-b bg-white sticky top-0 z-30" style={{background: '#fff'}}>
+    <nav className="w-full flex items-center justify-between px-6 py-4 border-b bg-white sticky top-0 z-30" style={{background: COLORS.surface}}>
       <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight hover:underline focus:outline-none focus:ring-2 focus:ring-blue-200 transition">
-        <img src="/logo.svg" alt="Museum Passport Logo" className="w-8 h-8" />
+        <img src="/brand-logo.png" alt="Museum Passport Logo" className="w-8 h-8" />
         Museum Passport
       </Link>
       <div className="flex items-center gap-6">
